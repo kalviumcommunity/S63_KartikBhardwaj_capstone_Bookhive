@@ -1,4 +1,6 @@
 const Book = require('../models/Book');
+
+// Get all books
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find();
@@ -7,4 +9,17 @@ const getAllBooks = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-module.exports = { getAllBooks };
+
+// Create a new book (POST)
+const createBook = async (req, res) => {
+  try {
+    const { title, author, description } = req.body;
+    const newBook = new Book({ title, author, description });
+    await newBook.save();
+    res.status(201).json(newBook);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { getAllBooks, createBook };
