@@ -92,3 +92,8 @@ Day 7: Record and edit demo video showcasing BookHive features.
 ### Conclusion:
 
 BookHive blends technology with a passion for reading, offering a complete community experience. Built with the MERN stack, real-world features, and scalability in mind. 📚✨
+
+### Deployed Links:
+
+
+- **Backend Deployment Link:** [BookHive Backend on Render](https://s63-kartikbhardwaj-capstone-bookhive.onrender.com)
