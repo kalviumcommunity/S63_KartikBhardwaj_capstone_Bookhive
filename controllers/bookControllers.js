@@ -58,9 +58,32 @@ const addBook = async (req, res) => {
   }
 };
 
+// 4. Update a book in MongoDB
+const updateBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, author, publishYear, coverImage } = req.body;
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      id,
+      { title, author, publishYear, coverImage },
+      { new: true } // Return updated document
+    );
+
+    if (!updatedBook) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    res.status(200).json({ message: 'Book updated successfully', book: updatedBook });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating book', error: error.message });
+  }
+};
+
 // Export
 module.exports = { 
   getAllBooks,
   fetchBooksFromOpenLibrary,
-  addBook
+  addBook,
+  updateBook // 👈 yeh naya export hua
 };
