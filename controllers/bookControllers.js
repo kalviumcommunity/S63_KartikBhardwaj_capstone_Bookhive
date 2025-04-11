@@ -1,7 +1,7 @@
-const axios = require('axios'); // <-- Yeh add karna zaroori hai
-const Book = require('../models/Book'); // Existing Book model import
+const axios = require('axios');
+const Book = require('../models/Book');
 
-// 1. Function to fetch all books from your MongoDB
+// 1. Fetch all books from MongoDB
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find();
@@ -11,11 +11,10 @@ const getAllBooks = async (req, res) => {
   }
 };
 
-
-// 2. Function to fetch books from Open Library API
+// 2. Fetch books from Open Library API
 const fetchBooksFromOpenLibrary = async (req, res) => {
   try {
-    const searchQuery = req.query.q; // User kya search kar raha hai
+    const searchQuery = req.query.q;
     const response = await axios.get(`https://openlibrary.org/search.json?q=${searchQuery}`);
     
     const books = response.data.docs.map(book => ({
@@ -32,8 +31,36 @@ const fetchBooksFromOpenLibrary = async (req, res) => {
   }
 };
 
-// Export both functions properly
+// 3. Save a book to MongoDB
+const addBook = async (req, res) => {
+  try {
+    const { title, author, publishYear, coverImage, openLibraryId } = req.body;
+
+    // Check if the book already exists
+    const existingBook = await Book.findOne({ openLibraryId });
+
+    if (existingBook) {
+      return res.status(400).json({ message: 'Book already exists in database' });
+    }
+
+    const newBook = new Book({
+      title,
+      author,
+      publishYear,
+      coverImage,
+      openLibraryId
+    });
+
+    await newBook.save();
+    res.status(201).json({ message: 'Book saved successfully', book: newBook });
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving book', error: error.message });
+  }
+};
+
+// Export
 module.exports = { 
   getAllBooks,
-  fetchBooksFromOpenLibrary
+  fetchBooksFromOpenLibrary,
+  addBook
 };

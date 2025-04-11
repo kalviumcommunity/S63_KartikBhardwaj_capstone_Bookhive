@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { getAllBooks, fetchBooksFromOpenLibrary } = require('../controllers/bookControllers');
+const { getAllBooks, fetchBooksFromOpenLibrary, addBook } = require('../controllers/bookControllers');
 
-// Existing Route (Get all books from MongoDB)
+// GET: All books from MongoDB
 router.get('/', getAllBooks);
 
-// New Route (Search books from Open Library)
+// GET: Search books from Open Library
 router.get('/search', fetchBooksFromOpenLibrary);
 
+// POST: Add a new book to MongoDB
+router.post('/', addBook);
 
 module.exports = router;
