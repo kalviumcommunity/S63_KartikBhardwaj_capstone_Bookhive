@@ -3,14 +3,17 @@ const mongoose = require('mongoose');
 const bookSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    author: { type: String, required: true },  // usually author bhi required hota hai
-    publishYear: { type: Number },             // Year should be Number, not String
+    author: { type: String, required: true }, 
+    publishYear: { type: Number },            
     coverImage: { type: String },
-    openLibraryId: { type: String, unique: true }
+    openLibraryId: { type: String, unique: true },
+    userId: { 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    }
   },
-  { timestamps: true }  // createdAt aur updatedAt automatic aa jayega
+  { timestamps: true } 
 );
-
 const Book = mongoose.model('Book', bookSchema);
-
 module.exports = Book;
