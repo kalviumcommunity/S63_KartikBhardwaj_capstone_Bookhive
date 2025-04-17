@@ -1,0 +1,141 @@
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3rem 6rem;
+  background-color: #fdf6e3;
+  min-height: 80vh;
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 50%;
+  text-align: center;
+}
+
+.hero-text h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.hero-text p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.explore-btn {
+  background-color: #f0f0ff;
+  color: #333;
+  border: none;
+  padding: 0.8rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+  background-color: #e8e8ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.hero-image {
+  flex: 1;
+  position: relative;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+.book {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.book-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+.orange-book {
+  width: 70px;
+  height: 250px;
+  background-color: #ff9f43;
+  left: 15%;
+  bottom: 50px;
+  z-index: 1;
+}
+
+.blue-book {
+  width: 90px;
+  height: 220px;
+  background-color: #54a0ff;
+  left: 35%;
+  bottom: 50px;
+  z-index: 2;
+}
+
+.white-book {
+  width: 100px;
+  height: 280px;
+  background-color: #ffffff;
+  left: 50%;
+  bottom: 50px;
+  z-index: 3;
+}
+
+.yellow-book {
+  width: 60px;
+  height: 180px;
+  background-color: #feca57;
+  right: 15%;
+  bottom: 50px;
+  z-index: 2;
+}
+
+.platform {
+  position: absolute;
+  width: 80%;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  bottom: 40px;
+  z-index: 0;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-orientation: mixed;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 2rem;
+  }
+  
+  .hero-text {
+    max-width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
+} 
