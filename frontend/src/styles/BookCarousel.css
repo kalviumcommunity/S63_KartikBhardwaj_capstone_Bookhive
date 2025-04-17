@@ -1,0 +1,404 @@
+.book-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1200px;
+  overflow: hidden;
+  padding: 0 40px;
+}
+
+.book-carousel-container.paused {
+  overflow: visible;
+}
+
+/* Circular carousel specific styles */
+.circular-carousel {
+  perspective: 1800px;
+  transform-style: preserve-3d;
+}
+
+.carousel-perspective {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+}
+
+@keyframes carouselSpin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.book-carousel {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+}
+
+/* Book card styling */
+.carousel-book {
+  position: absolute;
+  width: 200px;
+  height: 280px;
+  transition: all 0.5s ease-out;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  backface-visibility: hidden;
+}
+
+.carousel-book::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.carousel-book.active {
+  animation: bookPulse 3s infinite alternate;
+  z-index: 10;
+}
+
+.carousel-book.opening {
+  animation: simpleOpen 0.5s forwards;
+}
+
+/* Simple pulse animation for active book */
+@keyframes bookPulse {
+  0% {
+    transform: translateZ(50px) scale(1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    transform: translateZ(60px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Simple open animation */
+@keyframes simpleOpen {
+  0% {
+    transform: translateZ(50px) scale(1);
+  }
+  100% {
+    transform: translateZ(100px) scale(1.2);
+  }
+}
+
+.carousel-book:hover:not(.active):not(.opening) {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.book-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.book-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  text-align: center;
+  border-left: 8px solid;
+  background: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 20%);
+}
+
+.book-label span {
+  display: block;
+  margin: 5px 0;
+}
+
+.book-label span:first-child {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.carousel-book.focused {
+  z-index: 100;
+}
+
+/* Navigation buttons */
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.carousel-nav:hover {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-nav.prev {
+  left: 10px;
+}
+
+.carousel-nav.next {
+  right: 10px;
+}
+
+/* Carousel dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.carousel-dot.active {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.2);
+}
+
+/* Book details view */
+.book-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.book-detail-card {
+  background: white;
+  width: 90%;
+  max-width: 900px;
+  height: 80%;
+  max-height: 600px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  position: relative;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.close-detail {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.book-detail-content {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.book-detail-cover {
+  flex: 0 0 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  background: #f5f5f5;
+}
+
+.book-detail-cover img {
+  max-width: 100%;
+  max-height: 100%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.book-detail-cover .no-cover {
+  width: 220px;
+  height: 330px;
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #666;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.book-detail-info {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.book-detail-info h3 {
+  margin: 0 0 10px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.author {
+  margin: 0 0 15px;
+  color: #666;
+  font-style: italic;
+}
+
+.star-rating {
+  display: flex;
+  margin: 10px 0;
+}
+
+.star {
+  font-size: 1.3rem;
+  margin-right: 3px;
+}
+
+.full-star {
+  color: #FFD700;
+}
+
+.half-star {
+  background: linear-gradient(90deg, #FFD700 50%, #ccc 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.empty-star {
+  color: #ccc;
+}
+
+.review-count {
+  color: #888;
+  margin: 5px 0 15px;
+  font-size: 0.9rem;
+}
+
+.publish-year {
+  margin: 5px 0 15px;
+  color: #555;
+}
+
+.book-description {
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+.book-description h4 {
+  margin: 0 0 10px;
+  color: #444;
+}
+
+.category-tag {
+  display: inline-block;
+  background: #f1f1f1;
+  color: #666;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin: 10px 0;
+}
+
+.action-buttons {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.view-more-btn, .add-to-list-btn {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-more-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  text-decoration: none;
+}
+
+.view-more-btn:hover {
+  background: #2563eb;
+}
+
+.add-to-list-btn {
+  background: white;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+}
+
+.add-to-list-btn:hover {
+  background: #f8fafc;
+} 
