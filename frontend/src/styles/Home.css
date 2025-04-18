@@ -1,0 +1,15 @@
+.home {
+  min-height: 100vh;
+  background-color: #fdf6e9;
+}
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+/* Add smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+} 

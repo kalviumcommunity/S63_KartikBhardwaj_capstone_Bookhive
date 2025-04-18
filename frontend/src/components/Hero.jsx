@@ -11,7 +11,7 @@ const Hero = () => {
       id: 1,
       title: "The Great Gatsby",
       author: "F. Scott Fitzgerald",
-      image: "https://covers.openlibrary.org/b/id/8432047-L.jpg",
+      image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1650033243i/41733839.jpg",
       description: "Set in the Jazz Age on Long Island, the novel depicts narrator Nick Carraway's interactions with mysterious millionaire Jay Gatsby and Gatsby's obsession to reunite with his former lover, Daisy Buchanan.",
       year: 1925,
       rating: 4.3
@@ -20,7 +20,7 @@ const Hero = () => {
       id: 2,
       title: "To Kill a Mockingbird",
       author: "Harper Lee",
-      image: "https://covers.openlibrary.org/b/id/8231286-L.jpg",
+      image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1612238791i/56916837.jpg",
       description: "The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it. Through the young eyes of Scout and Jem Finch, Harper Lee explores the irrationality of adult attitudes to race and class in the Deep South of the 1930s.",
       year: 1960,
       rating: 4.5
@@ -29,7 +29,7 @@ const Hero = () => {
       id: 3,
       title: "1984",
       author: "George Orwell",
-      image: "https://covers.openlibrary.org/b/id/8575741-L.jpg",
+      image: "https://miro.medium.com/v2/resize:fit:800/1*g8s4n-puPV3y-F2b7ilJ_A.jpeg",
       description: "Among the seminal texts of the 20th century, 1984 paints the bleak picture of a society in which all information is controlled by the government and independent thought is labeled 'thoughtcrime'.",
       year: 1949,
       rating: 4.2
@@ -38,7 +38,7 @@ const Hero = () => {
       id: 4,
       title: "Pride and Prejudice",
       author: "Jane Austen",
-      image: "https://covers.openlibrary.org/b/id/8409593-L.jpg",
+      image: "https://m.media-amazon.com/images/M/MV5BMTA1NDQ3NTcyOTNeQTJeQWpwZ15BbWU3MDA0MzA4MzE@._V1_.jpg",
       description: "Since its publication in 1813, Pride and Prejudice has become one of the world's best-loved books. The story of Elizabeth Bennet and her complicated relationship with the proud Mr. Darcy has delighted readers for generations.",
       year: 1813,
       rating: 4.4
@@ -47,7 +47,7 @@ const Hero = () => {
       id: 5,
       title: "The Hobbit",
       author: "J.R.R. Tolkien",
-      image: "https://covers.openlibrary.org/b/id/12003830-L.jpg",
+      image: "https://m.media-amazon.com/images/M/MV5BMzU0NDY0NDEzNV5BMl5BanBnXkFtZTgwOTIxNDU1MDE@._V1_FMjpg_UX1000_.jpg",
       description: "Bilbo Baggins is a hobbit who enjoys a comfortable, unambitious life, rarely traveling any farther than his pantry or cellar. But his contentment is disturbed when the wizard Gandalf and a company of dwarves arrive on his doorstep one day to whisk him away on an adventure.",
       year: 1937,
       rating: 4.6

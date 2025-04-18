@@ -1,0 +1,142 @@
+.explore-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fdf6e9;
+}
+
+.explore-section h1 {
+  font-family: 'Special Elite', serif;
+  font-size: 2.5rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px;
+}
+
+.category-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  height: 100%;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.category-card.active {
+  border: 2px solid #4285f4;
+  background-color: #f8f9ff;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 15px;
+}
+
+.icon-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.category-card:nth-child(1) .icon-wrapper {
+  background-color: #f3f0ff;
+  color: #7c3aed;
+}
+
+.category-card:nth-child(2) .icon-wrapper {
+  background-color: #e8f1ff;
+  color: #4285f4;
+}
+
+.category-card:nth-child(3) .icon-wrapper {
+  background-color: #e7f9f0;
+  color: #10b981;
+}
+
+.category-icon {
+  font-size: 24px;
+}
+
+.card-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.card-content p {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.browse-link {
+  font-size: 1rem;
+  color: #4285f4;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
+}
+
+.arrow {
+  transition: transform 0.2s ease;
+}
+
+.category-card:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .explore-section {
+    padding: 40px 15px;
+  }
+
+  .explore-section h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 10px;
+  }
+
+  .category-card {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+} 

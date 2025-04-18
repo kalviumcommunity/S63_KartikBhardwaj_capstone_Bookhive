@@ -42,7 +42,9 @@
   cursor: pointer;
 }
 
-.nav-links a {
+.nav-links a,
+.nav-links .active,
+.nav-links Link {
   text-decoration: none;
   color: #333;
   font-weight: 500;
@@ -50,7 +52,10 @@
   transition: color 0.3s ease;
 }
 
-.nav-links a:hover, .nav-links a.active {
+.nav-links a:hover, 
+.nav-links a.active,
+.nav-links Link:hover,
+.nav-links Link.active {
   color: #000;
   font-weight: 600;
 }
