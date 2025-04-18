@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   // Handle scroll effect
   useEffect(() => {
@@ -49,14 +51,16 @@ const Navbar = () => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="logo">
-        <img src="/Logo.png" alt="Book Hive Logo" />
+        <Link to="/">
+          <img src="/Logo.png" alt="Book Hive Logo" />
+        </Link>
       </div>
       
       <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
-        <a href="/" className="active">Home</a>
-        <a href="/books">Books</a>
-        <a href="/login">Login</a>
-        <a href="/signup">Sign Up</a>
+        <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
+        <Link to="/books" className={location.pathname === '/books' ? 'active' : ''}>Books</Link>
+        <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}>Login</Link>
+        <Link to="/signup" className={location.pathname === '/signup' ? 'active' : ''}>Sign Up</Link>
       </div>
       
       <div className="search-container">
