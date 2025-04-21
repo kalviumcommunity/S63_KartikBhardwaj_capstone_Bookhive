@@ -1,12 +1,12 @@
 .book-carousel-container {
   position: relative;
   width: 100%;
-  height: 450px;
+  height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
   perspective: 1200px;
-  overflow: hidden;
+  overflow: visible;
   padding: 0 40px;
 }
 
@@ -14,10 +14,28 @@
   overflow: visible;
 }
 
-/* Circular carousel specific styles */
-.circular-carousel {
-  perspective: 1800px;
+.carousel-wrapper {
+  position: relative;
+  width: 400px;
+  height: 400px;
   transform-style: preserve-3d;
+}
+
+.circular-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: carouselRotate 20s linear infinite;
+}
+
+@keyframes carouselRotate {
+  from {
+    transform: rotateY(0);
+  }
+  to {
+    transform: rotateY(-360deg);
+  }
 }
 
 .carousel-perspective {
@@ -30,7 +48,7 @@
   transform-style: preserve-3d;
 }
 
-@keyframes carouselSpin {
+@keyframes rotate3D {
   from {
     transform: rotateY(0deg);
   }
@@ -52,33 +70,56 @@
 /* Book card styling */
 .carousel-book {
   position: absolute;
-  width: 200px;
-  height: 280px;
-  transition: all 0.5s ease-out;
+  width: 160px;
+  height: 240px;
+  left: calc(50% - 80px); /* Center horizontally */
+  top: calc(50% - 120px); /* Center vertically */
   transform-style: preserve-3d;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px;
   overflow: hidden;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+  border: 2px solid transparent;
+  background-clip: padding-box;
   backface-visibility: hidden;
+  transform-origin: center center;
 }
 
 .carousel-book::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: -2px;
+  z-index: -1;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.4)
+  );
+  border-radius: inherit;
+  filter: blur(8px);
+}
+
+.carousel-book img {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
-  z-index: 2;
+  object-fit: cover;
+  border-radius: 10px;
   pointer-events: none;
 }
 
+.carousel-book:hover {
+  transform: scale(1.05) translateZ(20px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  z-index: 1000;
+}
+
 .carousel-book.active {
-  animation: bookPulse 3s infinite alternate;
-  z-index: 10;
+  transform: scale(1.25) translateZ(60px);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
 .carousel-book.opening {
@@ -107,11 +148,6 @@
   }
 }
 
-.carousel-book:hover:not(.active):not(.opening) {
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-}
-
 .book-cover {
   width: 100%;
   height: 100%;
@@ -130,19 +166,20 @@
   height: 100%;
   padding: 15px;
   text-align: center;
-  border-left: 8px solid;
-  background: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 20%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  color: #333;
 }
 
 .book-label span {
   display: block;
   margin: 5px 0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .book-label span:first-child {
   font-weight: bold;
-  font-size: 1.2em;
-  margin-bottom: 10px;
+  font-size: 1.1em;
+  margin-bottom: 8px;
 }
 
 .carousel-book.focused {
