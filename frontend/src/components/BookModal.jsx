@@ -20,6 +20,8 @@ const BookModal = ({ book, onClose, onAddToReadingList }) => {
     e.stopPropagation();
   };
 
+  
+
   // Generate star rating display
   const renderStars = (rating) => {
     if (!rating) return null;
