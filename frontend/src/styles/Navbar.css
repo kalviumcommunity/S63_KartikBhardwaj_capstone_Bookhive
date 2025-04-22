@@ -25,10 +25,10 @@
 }
 
 .logo img {
-  height: 50px;
+  height: 120px;
   cursor: pointer;
-  width: auto;
-  max-height: 60px;
+  width: 200px;
+  margin-top: -40px;
   transition: all 0.3s ease;
 }
 
