@@ -3,6 +3,7 @@ import Navbar from './Navbar';
 import HeroSection from './HeroSection';
 import ExploreCategories from './ExploreCategories';
 import FeaturedBooks from './FeaturedBooks';
+import TopAuthors from './TopAuthors';
 import '../styles/Home.css';
 
 const Home = () => {
@@ -13,6 +14,7 @@ const Home = () => {
       <div className="main-content">
         <ExploreCategories />
         <FeaturedBooks />
+        <TopAuthors />
       </div>
     </div>
   );

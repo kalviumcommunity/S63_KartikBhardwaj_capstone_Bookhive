@@ -1,0 +1,36 @@
+.app-container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+}
+
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #4b5563;
+  margin-bottom: 2rem;
+}
+
+.home-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.home-button:hover {
+  background-color: #2563eb;
+} 

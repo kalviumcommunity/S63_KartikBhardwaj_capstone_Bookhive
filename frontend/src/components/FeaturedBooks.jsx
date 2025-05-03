@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getFeaturedBooks } from '../services/BookService';
 import BookCarousel from './BookCarousel';
+import { useNavigate } from 'react-router-dom';
 import '../styles/FeaturedBooks.css';
 
 const FeaturedBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchBooks = async () => {
@@ -17,6 +19,14 @@ const FeaturedBooks = () => {
     
     fetchBooks();
   }, []);
+  
+  const handleBookClick = (bookId) => {
+    // Check authentication before handling book click
+    // if (handleAuthRequired(navigate)) {
+    //   ...
+    // }
+    console.log('Featured book clicked:', bookId);
+  };
   
   return (
     <section className="featured-books">
