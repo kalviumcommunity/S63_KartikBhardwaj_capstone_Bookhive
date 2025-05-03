@@ -6,6 +6,7 @@ const Hero = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [highlightStars, setHighlightStars] = useState(false);
   
   // Real book images from Open Library
   const books = [
@@ -107,11 +108,13 @@ const Hero = () => {
   // Open book detail modal
   const openBookDetail = (book) => {
     setSelectedBook(book);
+    setHighlightStars(true);
   };
   
   // Close book detail modal
   const closeBookDetail = () => {
     setSelectedBook(null);
+    setHighlightStars(false);
   };
   
   // Generate star rating
@@ -119,15 +122,16 @@ const Hero = () => {
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
+    const starColor = highlightStars ? '#FFD700' : '#ffc107'; // yellow if active, default otherwise
     
     // Add full stars
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<span key={`star-${i}`} className="star full-star">★</span>);
+      stars.push(<span key={`star-${i}`} className="star full-star" style={{ color: starColor }}>★</span>);
     }
     
     // Add half star if needed
     if (hasHalfStar) {
-      stars.push(<span key="half-star" className="star half-star">★</span>);
+      stars.push(<span key="half-star" className="star half-star" style={{ color: starColor }}>★</span>);
     }
     
     // Add empty stars
