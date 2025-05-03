@@ -1,51 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/Navbar.css';
+import UserProfileMenu from './UserProfileMenu';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [profileDropdown, setProfileDropdown] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
         setScrolled(true);
-        document.body.classList.add('scrolled-page');
       } else {
         setScrolled(false);
-        document.body.classList.remove('scrolled-page');
       }
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when clicking outside
+  // Close mobile menu and dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const navLinks = document.querySelector('.nav-links');
-      const hamburger = document.querySelector('.hamburger');
-      
-      if (menuOpen && navLinks && hamburger && 
-          !navLinks.contains(event.target) && 
-          !hamburger.contains(event.target)) {
+      if (menuOpen && !event.target.closest('.nav-links') && !event.target.closest('.hamburger')) {
         setMenuOpen(false);
+      }
+      if (profileDropdown && !event.target.closest('.user-profile')) {
+        setProfileDropdown(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [menuOpen]);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpen, profileDropdown]);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setProfileDropdown(false);
   };
 
   return (
@@ -57,10 +56,27 @@ const Navbar = () => {
       </div>
       
       <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
-        <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
-        <Link to="/books" className={location.pathname === '/books' ? 'active' : ''}>Books</Link>
-        <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}>Login</Link>
-        <Link to="/signup" className={location.pathname === '/signup' ? 'active' : ''}>Sign Up</Link>
+        <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
+          Home
+        </Link>
+        <Link to="/books" className={location.pathname === '/books' ? 'active' : ''}>
+          Books
+        </Link>
+        {isAuthenticated() && (
+          <Link to="/reviews" className={location.pathname === '/reviews' ? 'active' : ''}>
+            Reviews
+          </Link>
+        )}
+        {!isAuthenticated() && (
+          <>
+            <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}>
+              Login
+            </Link>
+            <Link to="/signup" className={location.pathname === '/signup' ? 'active' : ''}>
+              Sign Up
+            </Link>
+          </>
+        )}
       </div>
       
       <div className="search-container">
@@ -75,16 +91,13 @@ const Navbar = () => {
         </div>
       </div>
       
+      {isAuthenticated() && (
       <div className="nav-right">
-        <div className="user-profile">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
+          <UserProfileMenu />
       </div>
+      )}
 
-      <div className="hamburger" onClick={toggleMenu}>
+      <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
         <div className={`hamburger-line ${menuOpen ? 'active' : ''}`}></div>
         <div className={`hamburger-line ${menuOpen ? 'active' : ''}`}></div>
         <div className={`hamburger-line ${menuOpen ? 'active' : ''}`}></div>
