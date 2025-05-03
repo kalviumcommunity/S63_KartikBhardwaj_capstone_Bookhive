@@ -11,6 +11,9 @@ router.post('/signup', async (req, res) => {
     const { username, email, password } = req.body;
 
     // Validate input
+
+
+
     if (!username || !email || !password) {
       return res.status(400).json({ 
         message: 'Please provide username, email and password' 
@@ -30,6 +33,9 @@ router.post('/signup', async (req, res) => {
 
     if (existingUser) {
       return res.status(400).json({ 
+
+
+        
         message: 'User with this email or username already exists' 
       });
     }
