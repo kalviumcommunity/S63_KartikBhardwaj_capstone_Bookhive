@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Hero.css';
 
 const Hero = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedBook, setSelectedBook] = useState(null);
   
@@ -146,7 +148,7 @@ const Hero = () => {
           <br />
           Start your journey to find the perfect book that resonates with you!
         </p>
-        <button className="explore-btn">Explore</button>
+        <button className="explore-btn" onClick={() => navigate('/books')}>Explore</button>
       </div>
       
       <div className="hero-image">

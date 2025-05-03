@@ -1,28 +1,51 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/Login.css';
 import Navbar from './Navbar';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
-    emailOrUsername: '',
+    identifier: '',
     password: '',
     rememberMe: false
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: type === 'checkbox' ? checked : value
-    });
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission - for now just log the data
-    console.log('Form submitted:', formData);
-    // You would typically send this data to your backend here
+    setError('');
+    setIsLoading(true);
+
+    if (!formData.identifier || !formData.password) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await login(formData.identifier, formData.password);
+      if (response.success) {
+        navigate('/');
+      } else {
+        setError(response.error || 'Invalid credentials');
+      }
+    } catch (err) {
+      setError(err.message || 'An error occurred during login');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,54 +56,64 @@ const Login = () => {
           <div className="login-form-container">
             <div className="login-form">
               <h1>Welcome Back</h1>
-              <p className="login-subtitle">Please sign in to your account</p>
+              <p className="login-subtitle">Please login to your account</p>
+
+              {error && <div className="error-message">{error}</div>}
 
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <label>Email or Username :</label>
+                  <label htmlFor="identifier">Email or Username</label>
                   <input
                     type="text"
-                    name="emailOrUsername"
-                    placeholder="Enter your email"
-                    value={formData.emailOrUsername}
+                    id="identifier"
+                    name="identifier"
+                    value={formData.identifier}
                     onChange={handleChange}
-                    required
+                    placeholder="Enter your email or username"
+                    disabled={isLoading}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Password:</label>
+                  <label htmlFor="password">Password</label>
                   <input
                     type="password"
+                    id="password"
                     name="password"
-                    placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
-                    required
+                    placeholder="Enter your password"
+                    disabled={isLoading}
                   />
                 </div>
 
                 <div className="login-options">
-                  <label className="remember-me">
+                  <div className="remember-me">
                     <input
                       type="checkbox"
+                      id="rememberMe"
                       name="rememberMe"
                       checked={formData.rememberMe}
                       onChange={handleChange}
+                      disabled={isLoading}
                     />
-                    <span>Remember me</span>
-                  </label>
+                    <label htmlFor="rememberMe">Remember me</label>
+                  </div>
                   <Link to="/forgot-password" className="forgot-password">
-                    Forgot Password ?
+                    Forgot Password?
                   </Link>
                 </div>
 
-                <button type="submit" className="sign-in-btn">
-                  Sign In
+                <button 
+                  type="submit" 
+                  className="login-button"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Logging in...' : 'Login'}
                 </button>
 
                 <p className="signup-prompt">
-                  Don't have an account? <Link to="/signup">Sign up</Link>
+                  Don't have an account? <Link to="/signup">Create Account</Link>
                 </p>
               </form>
             </div>

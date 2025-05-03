@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './Navbar';
-import BookModal from './BookModal';
+import BookDetailsModal from './BookDetailsModal';
 import '../styles/Books.css';
+import { useNavigate } from 'react-router-dom';
 
 const Books = () => {
   const [books, setBooks] = useState({
@@ -14,6 +15,8 @@ const Books = () => {
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookDetails, setBookDetails] = useState(null);
+  const navigate = useNavigate();
 
   // Create refs for each category's scroll container
   const scrollContainers = {
@@ -22,85 +25,6 @@ const Books = () => {
     mystery: useRef(null),
     romance: useRef(null),
     motivation: useRef(null)
-  };
-
-  const fetchBookDetails = async (key) => {
-    try {
-      console.log('Fetching details for key:', key);
-      const response = await fetch(`https://openlibrary.org${key}.json`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log('Raw API response:', data);
-      
-      // Fetch description if available
-      let description = '';
-      if (data.description) {
-        description = typeof data.description === 'object' 
-          ? data.description.value 
-          : data.description;
-      }
-
-      // Generate a more realistic random rating between 3.5 and 5
-      const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
-
-      const details = {
-        description,
-        publishYear: data.first_publish_date || data.publish_date,
-        pages: data.number_of_pages,
-        rating: rating,
-        // Add ISBN if available
-        isbn: data.isbn_13 ? data.isbn_13[0] : (data.isbn_10 ? data.isbn_10[0] : null),
-        // Add language if available
-        language: data.languages ? data.languages[0]?.key.split('/').pop() : 'English'
-      };
-
-      console.log('Processed book details:', details);
-      return details;
-    } catch (error) {
-      console.error('Error fetching book details:', error);
-      // Return default values if fetch fails
-      return {
-        description: 'Description temporarily unavailable.',
-        publishYear: 'Unknown',
-        pages: null,
-        rating: '4.0',
-        isbn: null,
-        language: 'English'
-      };
-    }
-  };
-
-  const handleBookClick = async (book) => {
-    console.log('Book clicked:', book);
-    try {
-      const details = await fetchBookDetails(book.key);
-      console.log('Fetched book details:', details);
-      
-      const bookWithDetails = {
-        ...book,
-        ...details,
-        coverUrl: getCoverImage(book.coverId)
-      };
-      console.log('Complete book data:', bookWithDetails);
-      
-      setSelectedBook(bookWithDetails);
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error('Error in handleBookClick:', error);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedBook(null);
-  };
-
-  const handleAddToReadingList = (book) => {
-    // TODO: Implement reading list functionality
-    console.log('Adding to reading list:', book.title);
-    // You can add your reading list logic here
   };
 
   const fetchBooks = async (subject, limit = 6) => {
@@ -112,10 +36,14 @@ const Books = () => {
       const data = await response.json();
       return data.works.map(book => ({
         title: book.title,
-        author: book.authors?.[0]?.name || 'Unknown Author',
-        coverId: book.cover_id,
+        author_name: book.authors?.[0]?.name || 'Unknown Author',
+        cover_i: book.cover_id,
         key: book.key,
-        genre: actualSubject.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        subject: [actualSubject.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())],
+        first_publish_year: book.first_publish_year,
+        language: book.language ? [book.language] : ['English'],
+        coverUrl: book.cover_id ? `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg` : null,
+        largeCoverUrl: book.cover_id ? `https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg` : null
       }));
     } catch (error) {
       console.error('Error fetching books:', error);
@@ -147,10 +75,48 @@ const Books = () => {
     loadBooks();
   }, []);
 
-  const getCoverImage = (coverId) => {
-    return coverId 
-      ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
-      : 'https://via.placeholder.com/300x450?text=No+Cover+Available';
+  const handleBookClick = async (book) => {
+    console.log('Book clicked:', book);
+    
+    // Extract the works ID from the key
+    const worksId = book.key.replace('/works/', '');
+    
+    // Create a book object with the necessary structure
+    const bookData = {
+      key: worksId,
+      title: book.title,
+      author: book.author_name,
+      coverUrl: book.coverUrl,
+      largeCoverUrl: book.largeCoverUrl
+    };
+    
+    setSelectedBook(bookData);
+    setIsModalOpen(true);
+    
+    try {
+      // Fetch additional book details
+      const response = await fetch(`http://localhost:5001/api/books/external-details?title=${encodeURIComponent(book.title)}`);
+      const details = await response.json();
+      setBookDetails(details);
+    } catch (error) {
+      console.error('Error fetching book details:', error);
+      setBookDetails({
+        description: 'No description available.',
+        subjects: [],
+        firstPublishYear: book.first_publish_year || 'Unknown',
+        language: book.language?.[0] || 'Unknown',
+        publishers: 'Unknown',
+        numberOfPages: 'Unknown',
+        publishDate: 'Unknown',
+        isbn: 'Unknown'
+      });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedBook(null);
+    setBookDetails(null);
   };
 
   const scroll = (direction, category) => {
@@ -210,14 +176,21 @@ const Books = () => {
                   >
                     <div className="book-image-wrapper">
                       <img 
-                        src={getCoverImage(book.coverId)} 
+                        src={book.coverUrl || '/default-book-cover.jpg'} 
                         alt={book.title}
                         className="book-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          if (e.target.src !== '/default-book-cover.jpg') {
+                            e.target.src = '/default-book-cover.jpg';
+                          }
+                        }}
                       />
                     </div>
                     <div className="book-info">
-                      <h3>{book.title}</h3>
-                      <p>{book.author}</p>
+                      <h3 className="book-title">{book.title}</h3>
+                      <p className="book-author">{book.author_name?.[0] || 'Unknown Author'}</p>
                     </div>
                   </div>
                 ))}
@@ -228,10 +201,11 @@ const Books = () => {
       </div>
 
       {isModalOpen && selectedBook && (
-        <BookModal
-          book={selectedBook}
+        <BookDetailsModal
+          isOpen={isModalOpen}
           onClose={handleCloseModal}
-          onAddToReadingList={handleAddToReadingList}
+          book={selectedBook}
+          additionalDetails={bookDetails}
         />
       )}
     </div>
