@@ -1,30 +1,70 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/SignUp.css';
 import Navbar from './Navbar';
 
-const SignUp = () => {
+const Signup = () => {
+  const navigate = useNavigate();
+  const { signup } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
+    confirmPassword: '',
     agreeTerms: false
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: type === 'checkbox' ? checked : value
-    });
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission - for now just log the data
-    console.log('Form submitted:', formData);
-    // You would typically send this data to your backend here
+    setError('');
+    setIsLoading(true);
+
+    // Validation
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('All fields are required');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.agreeTerms) {
+      setError('Please agree to the Terms & Conditions');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Create username from first and last name
+      const username = `${formData.firstName}${formData.lastName}`.toLowerCase();
+      const response = await signup(username, formData.email, formData.password);
+      
+      if (response.success) {
+        navigate('/');
+      } else {
+        setError(response.message || 'Error during signup');
+      }
+    } catch (err) {
+      setError(err.message || 'An error occurred during signup');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -38,10 +78,10 @@ const SignUp = () => {
 
           <div className="signup-form-container">
             <div className="signup-form">
-              <h1>Create a Account</h1>
-              <p className="signin-prompt">
-                Already have an account? <Link to="/login">Sign in</Link>
-              </p>
+              <h1>Join BookHive Today!</h1>
+              <p className="welcome-text">Start your reading journey with us</p>
+
+              {error && <div className="error-message">{error}</div>}
 
               <form onSubmit={handleSubmit}>
                 <div className="form-row">
@@ -67,7 +107,7 @@ const SignUp = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email :"
+                  placeholder="Your email address"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -76,8 +116,17 @@ const SignUp = () => {
                 <input
                   type="password"
                   name="password"
-                  placeholder="Enter Your Password"
+                  placeholder="Create a password"
                   value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm password"
+                  value={formData.confirmPassword}
                   onChange={handleChange}
                   required
                 />
@@ -91,24 +140,20 @@ const SignUp = () => {
                       onChange={handleChange}
                       required
                     />
-                    <span>I agree to the Terms & Conditions</span>
+                    <span>I agree to BookHive's Terms & Privacy Policy</span>
                   </label>
                 </div>
 
-                <button type="submit" className="create-account-btn">
-                  Create account
+                <button type="submit" className="create-account-btn" disabled={isLoading}>
+                  {isLoading ? 'Signing up...' : 'Join BookHive'}
                 </button>
 
                 <div className="alt-signup">
-                  <p>Or register with</p>
+                  <p>Or continue with</p>
                   <div className="social-signup">
                     <button type="button" className="google-btn">
                       <img src="/google-icon.svg" alt="Google" className="provider-icon" />
-                      Sign up with Google
-                    </button>
-                    <button type="button" className="apple-btn">
-                      <img src="/apple-icon.svg" alt="Apple" className="provider-icon" />
-                      Sign up with Apple
+                      Continue with Google
                     </button>
                   </div>
                 </div>
@@ -121,4 +166,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp; 
+export default Signup; 

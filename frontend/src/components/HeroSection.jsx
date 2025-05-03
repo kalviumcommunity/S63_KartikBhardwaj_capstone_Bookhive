@@ -57,7 +57,7 @@ const HeroSection = () => {
 
   if (loading) {
     return (
-      <section className="hero-section">
+      <section className="hero-section" id="herosection">
         <div className="hero-content">
           <h1>Featured Books</h1>
           <div className="loading-placeholder">
