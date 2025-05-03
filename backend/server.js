@@ -20,6 +20,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+
+
+
 // Middleware
 app.use(express.json());
 
@@ -33,6 +36,8 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/bookhive', 
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
+
+
 .then(() => {
   console.log('MongoDB connected');
   seedBooks(); 
