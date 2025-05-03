@@ -62,16 +62,17 @@
   border: 1.5px solid #e0e0e0;
   border-radius: 8px;
   font-size: 1rem;
-  color: #333;
+  color: #111;
   background-color: #fff;
   transition: all 0.3s ease;
   margin-bottom: 1.5rem;
 }
 
-.signup-form input:focus {
+.signup-form input:focus,
+.signup-form input:hover {
   border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
-  outline: none;
+  background-color: #f5f8fa;
+  color: #111;
 }
 
 .signup-form input::placeholder {
