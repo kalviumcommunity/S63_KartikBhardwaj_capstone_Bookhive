@@ -1,14 +1,17 @@
 const mongoose = require('mongoose');
 const Book = require('./models/Book');
 const User = require('./models/User');
+
 const seedBooks = async () => {
   try {
     await Book.deleteMany();
     await User.deleteMany(); 
+    
     const user = await User.create({
-      name: 'Demo User',
+      username: 'demouser',
       email: 'demo@example.com',
-      password: 'password123'
+      password: 'password123',
+      role: 'user'
     });
 
     const books = [
@@ -43,4 +46,5 @@ const seedBooks = async () => {
     console.error('Error inserting sample books:', err);
   }
 };
+
 module.exports = seedBooks;
