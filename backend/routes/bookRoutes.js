@@ -317,4 +317,53 @@ router.get('/external-details', async (req, res) => {
   }
 });
 
+// PUT: Update a review
+router.put('/reviews/:reviewId', auth, async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { review, rating } = req.body;
+    const userId = req.user._id;
+
+    const existingReview = await Review.findById(reviewId);
+    if (!existingReview) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    if (existingReview.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ message: 'Not authorized to update this review' });
+    }
+
+    existingReview.review = review;
+    existingReview.rating = rating;
+    await existingReview.save();
+
+    res.json({
+      review: existingReview.review,
+      rating: existingReview.rating
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating review' });
+  }
+});
+
+// DELETE: Delete a review
+router.delete('/reviews/:reviewId', auth, async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const userId = req.user._id;
+
+    const existingReview = await Review.findById(reviewId);
+    if (!existingReview) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    if (existingReview.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ message: 'Not authorized to delete this review' });
+    }
+
+    await existingReview.deleteOne();
+    res.json({ message: 'Review deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting review' });
+  }
+});
+
 module.exports = router;

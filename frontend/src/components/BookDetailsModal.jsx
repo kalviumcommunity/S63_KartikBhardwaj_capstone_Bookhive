@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import './BookDetailsModal.css';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const StarRating = ({ rating, onRatingChange }) => {
   const [hover, setHover] = useState(0);
@@ -34,6 +35,9 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editReviewText, setEditReviewText] = useState('');
+  const [editRating, setEditRating] = useState(0);
 
   useEffect(() => {
     if (book) {
@@ -131,6 +135,59 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
     }
   };
 
+  const handleEditClick = (review) => {
+    setEditingReviewId(review._id);
+    setEditReviewText(review.review);
+    setEditRating(review.rating);
+  };
+
+  const handleEditSave = async (reviewId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `http://localhost:5001/api/books/reviews/${reviewId}`,
+        {
+          review: editReviewText,
+          rating: editRating,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      setReviews(reviews.map(r => r._id === reviewId ? {
+        ...r,
+        review: response.data.review,
+        rating: response.data.rating
+      } : r));
+      setEditingReviewId(null);
+      toast.success('Review updated successfully');
+    } catch (error) {
+      toast.error('Error updating review');
+    }
+  };
+
+  const handleDelete = async (reviewId) => {
+    if (!window.confirm('Are you sure you want to delete this review?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5001/api/books/reviews/${reviewId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      setReviews(reviews.filter(r => r._id !== reviewId));
+      toast.success('Review deleted successfully');
+    } catch (error) {
+      toast.error('Error deleting review');
+    }
+  };
+
+  const myReview = user && reviews.find(
+    r => r.userId?.username === user.username || r.userId === user.id
+  );
+
   if (loading) {
     return (
       <div className="modal-overlay">
@@ -147,9 +204,21 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
         <button className="close-button" onClick={onClose}>&times;</button>
         
         <div className="modal-header">
-          <div className="book-info">
-            <h2>{book.title}</h2>
-            <p className="author">by {book.author}</p>
+          <div className="book-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {(
+              <img 
+                src={book.coverUrl || '/default-book-cover.jpg'} 
+                alt={book.title} 
+                className="book-modal-cover" 
+                style={{ width: '140px', height: '210px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1.2rem', boxShadow: '0 2px 12px rgba(0,0,0,0.10)' }} 
+                onError={e => {
+                  e.target.onerror = null;
+                  e.target.src = '/default-book-cover.jpg';
+                }}
+              />
+            )}
+            <h2 style={{ margin: 0 }}>{book.title}</h2>
+            <p className="author" style={{ margin: 0, color: '#666', fontStyle: 'italic' }}>by {book.author}</p>
             {additionalDetails && (
               <div className="book-metadata-summary">
                 <p className="publish-info">
@@ -165,7 +234,7 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
           </div>
         </div>
 
-        {additionalDetails && (
+        {additionalDetails && false && (
           <div className="book-details">
             <div className="book-description">
               <h3>Description</h3>
@@ -193,7 +262,7 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
 
         <div className="reviews-section">
           <h3>Reviews {reviews.length > 0 && `(${reviews.length})`}</h3>
-          {user ? (
+          {user && !myReview && (
             <form onSubmit={handleReview} className="review-form">
               <div className="rating-input">
                 <label>Your Rating:</label>
@@ -208,7 +277,8 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
               />
               <button type="submit">Submit Review</button>
             </form>
-          ) : (
+          )}
+          {!user && (
             <p className="login-prompt">
               Please <Link to="/login" state={{ from: window.location.pathname }}>login</Link> to add a review
             </p>
@@ -218,18 +288,42 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
             {reviews.length === 0 ? (
               <p className="no-reviews">No reviews yet. Be the first to review!</p>
             ) : (
-              reviews.map((review, index) => (
-                <div key={index} className="review-item">
-                  <div className="review-header">
-                    <h4>{review.userId?.username || 'Anonymous'}</h4>
-                    <StarRating rating={review.rating || 0} />
+              reviews.map((review, index) => {
+                const isMyReview = user && (review.userId?.username === user.username || review.userId === user.id);
+                return (
+                  <div key={index} className="review-item">
+                    <div className="review-header">
+                      <h4>{review.userId?.username || 'Anonymous'}</h4>
+                      <StarRating rating={review.rating || 0} />
+                      {isMyReview && (
+                        <span style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
+                          <FaEdit style={{ cursor: 'pointer' }} title="Edit" onClick={() => handleEditClick(review)} />
+                          <FaTrash style={{ cursor: 'pointer', color: '#e74c3c' }} title="Delete" onClick={() => handleDelete(review._id)} />
+                        </span>
+                      )}
+                    </div>
+                    {editingReviewId === review._id ? (
+                      <div className="edit-review-form">
+                        <StarRating rating={editRating} onRatingChange={setEditRating} />
+                        <textarea
+                          value={editReviewText}
+                          onChange={e => setEditReviewText(e.target.value)}
+                          className="review-input"
+                        />
+                        <button onClick={() => handleEditSave(review._id)} style={{ marginRight: 8 }}>Save</button>
+                        <button onClick={() => setEditingReviewId(null)}>Cancel</button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="review-text">{review.review}</p>
+                        <span className="review-date">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
+                      </>
+                    )}
                   </div>
-                  <p className="review-text">{review.review}</p>
-                  <span className="review-date">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

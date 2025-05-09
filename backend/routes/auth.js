@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const passport = require('passport');
 
 // Signup route
 router.post('/signup', async (req, res) => {
@@ -33,6 +34,7 @@ router.post('/signup', async (req, res) => {
 
     if (existingUser) {
       return res.status(400).json({ 
+
 
 
         
@@ -179,6 +181,15 @@ router.get('/profile', auth, async (req, res) => {
     console.error('Error in profile:', error);
     res.status(500).json({ message: 'Error fetching profile', error: error.message });
   }
+});
+
+// Google OAuth login
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Google OAuth callback
+router.get('/callback', passport.authenticate('google', { session: false }), (req, res) => {
+  const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/?token=${token}`);
 });
 
 module.exports = router; 

@@ -151,7 +151,7 @@ const Signup = () => {
                 <div className="alt-signup">
                   <p>Or continue with</p>
                   <div className="social-signup">
-                    <button type="button" className="google-btn">
+                    <button type="button" className="google-btn" onClick={() => window.location.href = 'http://localhost:5001/api/auth/google'}>
                       <img src="/google-icon.svg" alt="Google" className="provider-icon" />
                       Continue with Google
                     </button>

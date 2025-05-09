@@ -6,6 +6,9 @@ const bookRoutes = require('./routes/bookRoutes');
 const authRoutes = require('./routes/auth');
 const seedBooks = require('./openServer'); 
 const path = require('path');
+const session = require('express-session');
+const passport = require('passport');
+require('./passport'); // Will create this file for Google OAuth config
 
 dotenv.config();
 
@@ -26,6 +29,13 @@ app.use(cors({
 
 // Middleware
 app.use(express.json());
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-session-secret',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use('/api/books', bookRoutes);

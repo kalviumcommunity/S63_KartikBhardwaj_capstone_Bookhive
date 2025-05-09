@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Login.css';
@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, checkAuthStatus } = useAuth();
   const [formData, setFormData] = useState({
     identifier: '',
     password: '',
@@ -14,6 +14,16 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      localStorage.setItem('token', token);
+      checkAuthStatus();
+      navigate('/');
+    }
+  }, [navigate, checkAuthStatus]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -111,6 +121,18 @@ const Login = () => {
                 >
                   {isLoading ? 'Logging in...' : 'Login'}
                 </button>
+
+                <div className="alt-signup">
+                  <p>Or continue with</p>
+                  <button
+                    type="button"
+                    className="google-btn"
+                    onClick={() => window.location.href = 'http://localhost:5001/api/auth/google'}
+                  >
+                    <img src="/google-icon.svg" alt="Google" className="provider-icon" />
+                    Continue with Google
+                  </button>
+                </div>
 
                 <p className="signup-prompt">
                   Don't have an account? <Link to="/signup">Create Account</Link>

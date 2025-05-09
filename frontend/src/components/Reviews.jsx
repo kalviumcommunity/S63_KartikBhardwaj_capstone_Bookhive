@@ -24,10 +24,11 @@ const Reviews = () => {
     try {
       // Use different endpoints based on whether we're showing all reviews or user reviews
       const endpoint = isMyReviews 
-        ? `http://localhost:5001/api/books/reviews/user/${user.id}`
+        ? `http://localhost:5001/api/books/reviews/user`
         : 'http://localhost:5001/api/books/reviews/all';
 
-      const response = await axios.get(endpoint);
+      const config = isMyReviews && user ? { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } } : {};
+      const response = await axios.get(endpoint, config);
       const validReviews = response.data.filter(review => 
         review && review.userId && review.review
       );

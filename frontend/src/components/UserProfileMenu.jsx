@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UserProfileMenu.css';
+import { useAuth } from '../context/AuthContext';
 
 const menuItems = [
   {
@@ -30,6 +31,7 @@ const UserProfileMenu = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -48,7 +50,7 @@ const UserProfileMenu = () => {
 
   const handleLogout = () => {
     setOpen(false);
-    // Add your logout logic here
+    logout();
     navigate('/login');
   };
 

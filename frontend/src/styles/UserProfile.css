@@ -182,4 +182,122 @@
   .info-value {
     width: 100%;
   }
+}
+
+/* Modern Profile Card Styles */
+.profile-card-modern {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.08), 0 1.5px 6px rgba(0,0,0,0.04);
+  padding: 2.5rem 2rem 2.5rem 2rem;
+  max-width: 420px;
+  width: 100%;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.profile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.profile-avatar-wrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  background: #f7f7f7;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-username {
+  font-size: 2.1rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.profile-edit-btn-modern {
+  background: #4f8cff;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(79,140,255,0.08);
+  transition: background 0.2s, transform 0.2s;
+}
+.profile-edit-btn-modern:hover {
+  background: #2563eb;
+  transform: translateY(-2px) scale(1.03);
+}
+
+.profile-info-list-modern {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.profile-info-item-modern {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #f7f8fa;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.profile-info-icon {
+  color: #4f8cff;
+  font-size: 1.3rem;
+  min-width: 22px;
+}
+
+.profile-info-label {
+  font-size: 1.08rem;
+  color: #555;
+  font-weight: 500;
+  min-width: 110px;
+}
+
+.profile-info-value {
+  font-size: 1.08rem;
+  color: #222;
+  font-weight: 400;
+  word-break: break-all;
+}
+
+@media (max-width: 600px) {
+  .profile-card-modern {
+    padding: 1.2rem 0.5rem;
+    max-width: 98vw;
+  }
+  .profile-avatar-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+  .profile-username {
+    font-size: 1.3rem;
+  }
+  .profile-info-label, .profile-info-value {
+    font-size: 0.98rem;
+  }
 } 

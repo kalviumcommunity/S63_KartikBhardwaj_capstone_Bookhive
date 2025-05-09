@@ -14,10 +14,12 @@ import { AuthProvider } from './context/AuthContext'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Reviews from './components/Reviews'
+import AuthTokenHandler from './AuthTokenHandler'
 
 function App() {
   return (
     <AuthProvider>
+      <AuthTokenHandler />
       <ThemeProvider>
         <Router>
           <div className="app-container">
@@ -42,6 +44,11 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/reviews" element={
+                <ProtectedRoute>
+                  <Reviews />
+                </ProtectedRoute>
+              } />
+              <Route path="/my-reviews" element={
                 <ProtectedRoute>
                   <Reviews />
                 </ProtectedRoute>

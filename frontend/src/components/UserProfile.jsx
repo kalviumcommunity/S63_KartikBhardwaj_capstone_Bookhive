@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import EditProfileModal from './EditProfileModal';
 import '../styles/UserProfile.css';
+import { FaUser, FaEnvelope, FaIdBadge, FaUserTag, FaClock } from 'react-icons/fa';
 
 const UserProfile = () => {
   const { user } = useAuth();
@@ -47,54 +48,51 @@ const UserProfile = () => {
 
   return (
     <div className="profile-page">
-      <div className="profile-container">
-        <div className="profile-header-card">
-          <div className="profile-image-container">
+      <div className="profile-card-modern">
+        <div className="profile-avatar-section">
+          <div className="profile-avatar-wrapper">
             <img 
               src={userInfo.profileImage} 
               alt={userInfo.username} 
-              className="profile-image"
+              className="profile-avatar-img"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = '/default-avatar.png';
               }}
             />
           </div>
-          <div className="profile-header-info">
-            <h1>{userInfo.username}</h1>
-                <button
-              className="edit-profile-btn" 
-              onClick={handleEditProfile}
-              aria-label="Edit Profile"
-                >
-                  Edit Profile
-                </button>
-            </div>
+          <h1 className="profile-username">{userInfo.username}</h1>
+          <button
+            className="profile-edit-btn-modern"
+            onClick={handleEditProfile}
+            aria-label="Edit Profile"
+          >
+            Edit Profile
+          </button>
+        </div>
+        <div className="profile-info-list-modern">
+          <div className="profile-info-item-modern">
+            <FaIdBadge className="profile-info-icon" />
+            <span className="profile-info-label">User ID:</span>
+            <span className="profile-info-value">{userInfo.userId}</span>
           </div>
-
-        <div className="account-info-card">
-          <h2>Account Informations</h2>
-          <div className="info-list">
-            <div className="info-item">
-              <span className="info-label">User id :</span>
-              <span className="info-value">{userInfo.userId}</span>
-              </div>
-            <div className="info-item">
-              <span className="info-label">Email :</span>
-              <span className="info-value">{userInfo.email}</span>
-              </div>
-            <div className="info-item">
-              <span className="info-label">Account Type :</span>
-              <span className="info-value">{userInfo.accountType}</span>
-              </div>
-            <div className="info-item">
-              <span className="info-label">Last Login :</span>
-              <span className="info-value">{userInfo.lastLogin}</span>
-            </div>
+          <div className="profile-info-item-modern">
+            <FaEnvelope className="profile-info-icon" />
+            <span className="profile-info-label">Email:</span>
+            <span className="profile-info-value">{userInfo.email}</span>
+          </div>
+          <div className="profile-info-item-modern">
+            <FaUserTag className="profile-info-icon" />
+            <span className="profile-info-label">Account Type:</span>
+            <span className="profile-info-value">{userInfo.accountType}</span>
+          </div>
+          <div className="profile-info-item-modern">
+            <FaClock className="profile-info-icon" />
+            <span className="profile-info-label">Last Login:</span>
+            <span className="profile-info-value">{userInfo.lastLogin}</span>
           </div>
         </div>
       </div>
-
       <EditProfileModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
