@@ -291,10 +291,10 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
               reviews.map((review, index) => {
                 const isMyReview = user && (review.userId?.username === user.username || review.userId === user.id);
                 return (
-                  <div key={index} className="review-item">
-                    <div className="review-header">
-                      <h4>{review.userId?.username || 'Anonymous'}</h4>
-                      <StarRating rating={review.rating || 0} />
+                <div key={index} className="review-item">
+                  <div className="review-header">
+                    <h4>{review.userId?.username || 'Anonymous'}</h4>
+                    <StarRating rating={review.rating || 0} />
                       {isMyReview && (
                         <span style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
                           <FaEdit style={{ cursor: 'pointer' }} title="Edit" onClick={() => handleEditClick(review)} />
@@ -312,16 +312,16 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
                         />
                         <button onClick={() => handleEditSave(review._id)} style={{ marginRight: 8 }}>Save</button>
                         <button onClick={() => setEditingReviewId(null)}>Cancel</button>
-                      </div>
+                  </div>
                     ) : (
                       <>
-                        <p className="review-text">{review.review}</p>
-                        <span className="review-date">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </span>
+                  <p className="review-text">{review.review}</p>
+                  <span className="review-date">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </span>
                       </>
                     )}
-                  </div>
+                </div>
                 );
               })
             )}
