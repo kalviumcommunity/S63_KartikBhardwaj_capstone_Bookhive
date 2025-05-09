@@ -84,8 +84,6 @@ Day 4: Add pagination for book listings and reviews.
 Day 5: Implement caching strategies for faster API responses.
 Day 6: Fine-tune frontend animations and transitions (optional: Framer Motion).
 Day 7: Internal demo of completed features.
-
-
 Week 4: Testing & Deployment
 Day 1: Test backend APIs with Postman (authentication, reviews, user actions).
 Day 2: Write frontend unit tests using Jest and React Testing Library.
@@ -99,10 +97,10 @@ Day 7: Record and edit demo video showcasing BookHive features.
 . Frontend: Vercel
 . Backend: Render
 . Database: MongoDB Atlas
-
 ### Conclusion:
 
 BookHive blends technology with a passion for reading, offering a complete community experience. Built with the MERN stack, real-world features, and scalability in mind. 📚✨
+ Implementing 'update' and 'delete' an entity
 
 Frontend Deployment Link - "https://bookhiveee.netlify.app/"
 Backend Deployment Link - "https://bookhivemernapi.onrender.com/"

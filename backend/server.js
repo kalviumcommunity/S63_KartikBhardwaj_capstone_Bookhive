@@ -15,6 +15,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+
+
+
 // CORS configuration
 app.use(cors({
   origin: [
@@ -37,6 +40,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+
+
 // Routes
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', authRoutes);
@@ -56,3 +62,6 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/bookhive', 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
