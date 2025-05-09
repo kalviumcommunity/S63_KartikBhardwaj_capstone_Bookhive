@@ -22,6 +22,9 @@ Explore, engage, and grow your passion for books with a like-minded community!
 
 
 
+
+
+
 4. Admin Tools
 .  Moderate reviews
 .  Manage books and users
@@ -41,6 +44,8 @@ Explore, engage, and grow your passion for books with a like-minded community!
 . Database: MongoDB + Mongoose
 . Integrations: Google Books API, Firebase Auth (Google Sign-In)
 . Deployment: Vercel (Frontend), Render (Backend), MongoDB Atlas (Database)
+
+
 ### UI Flow:
 
 . Landing Page: Hero section, search bar, featured carousel, CTA buttons
