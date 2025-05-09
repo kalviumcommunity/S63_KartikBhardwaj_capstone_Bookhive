@@ -9,6 +9,8 @@ Explore, engage, and grow your passion for books with a like-minded community!
 
 1. Book Discovery
 .  Search by title, author, or genre
+
+
 .  View summaries, ratings, publication info
 2. Review System
 .  Write and read reviews
@@ -17,6 +19,9 @@ Explore, engage, and grow your passion for books with a like-minded community!
 3. User Profiles
 .  Personalized dashboards
 .  Track reading history and favorite books
+
+
+
 4. Admin Tools
 .  Moderate reviews
 .  Manage books and users
