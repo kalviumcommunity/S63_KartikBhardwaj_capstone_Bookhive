@@ -52,7 +52,8 @@ Explore, engage, and grow your passion for books with a like-minded community!
 . Authentication: Signup/Login, Google OAuth, password recovery
 . Dashboard: Book filters, grid listings, detail modals, review section
 . Profile Page: User stats, recent reviews, wishlist, settings
-. Admin Panel: Manage reported reviews, books, and users
+. Admin Panel: Manage reported reviews, books, and users\
+
 ### Development Roadmap:
 
 
@@ -76,6 +77,9 @@ Day 6: Implement "Follow" and "Unfollow" user system.
 Day 7: Test basic user flows (search, review, follow)
 
 
+
+
+
 Week 3: UI/UX and Admin Panel
 Day 1: Apply responsive UI with Tailwind CSS across all pages.
 Day 2: Build admin panel (dashboard for managing users, books, reviews).
@@ -84,6 +88,8 @@ Day 4: Add pagination for book listings and reviews.
 Day 5: Implement caching strategies for faster API responses.
 Day 6: Fine-tune frontend animations and transitions (optional: Framer Motion).
 Day 7: Internal demo of completed features.
+
+
 
 
 Week 4: Testing & Deployment
