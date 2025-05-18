@@ -9,6 +9,8 @@ Explore, engage, and grow your passion for books with a like-minded community!
 
 1. Book Discovery
 .  Search by title, author, or genre
+
+
 .  View summaries, ratings, publication info
 2. Review System
 .  Write and read reviews
@@ -17,6 +19,12 @@ Explore, engage, and grow your passion for books with a like-minded community!
 3. User Profiles
 .  Personalized dashboards
 .  Track reading history and favorite books
+
+
+
+
+
+
 4. Admin Tools
 .  Moderate reviews
 .  Manage books and users
@@ -36,13 +44,16 @@ Explore, engage, and grow your passion for books with a like-minded community!
 . Database: MongoDB + Mongoose
 . Integrations: Google Books API, Firebase Auth (Google Sign-In)
 . Deployment: Vercel (Frontend), Render (Backend), MongoDB Atlas (Database)
+
+
 ### UI Flow:
 
 . Landing Page: Hero section, search bar, featured carousel, CTA buttons
 . Authentication: Signup/Login, Google OAuth, password recovery
 . Dashboard: Book filters, grid listings, detail modals, review section
 . Profile Page: User stats, recent reviews, wishlist, settings
-. Admin Panel: Manage reported reviews, books, and users
+. Admin Panel: Manage reported reviews, books, and users\
+
 ### Development Roadmap:
 
 
@@ -66,6 +77,9 @@ Day 6: Implement "Follow" and "Unfollow" user system.
 Day 7: Test basic user flows (search, review, follow)
 
 
+
+
+
 Week 3: UI/UX and Admin Panel
 Day 1: Apply responsive UI with Tailwind CSS across all pages.
 Day 2: Build admin panel (dashboard for managing users, books, reviews).
@@ -74,7 +88,6 @@ Day 4: Add pagination for book listings and reviews.
 Day 5: Implement caching strategies for faster API responses.
 Day 6: Fine-tune frontend animations and transitions (optional: Framer Motion).
 Day 7: Internal demo of completed features.
-
 
 Week 4: Testing & Deployment
 Day 1: Test backend APIs with Postman (authentication, reviews, user actions).
@@ -89,10 +102,10 @@ Day 7: Record and edit demo video showcasing BookHive features.
 . Frontend: Vercel
 . Backend: Render
 . Database: MongoDB Atlas
-
 ### Conclusion:
 
 BookHive blends technology with a passion for reading, offering a complete community experience. Built with the MERN stack, real-world features, and scalability in mind. 📚✨
+ Implementing 'update' and 'delete' an entity
 
 Frontend Deployment Link - "https://bookhiveee.netlify.app/"
 Backend Deployment Link - "https://bookhivemernapi.onrender.com/"
