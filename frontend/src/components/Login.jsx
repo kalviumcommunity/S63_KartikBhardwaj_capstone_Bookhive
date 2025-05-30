@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import '../styles/Login.css';
 import Navbar from './Navbar';
+import OTPVerification from './OTPVerification';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, checkAuthStatus } = useAuth();
+  const location = useLocation();
+  const { login, checkAuthStatus, sendOTP, verifyLoginOTP } = useAuth();
   const [formData, setFormData] = useState({
     identifier: '',
     password: '',
@@ -14,16 +17,34 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // OTP verification state
+  const [showOTP, setShowOTP] = useState(false);
+  const [otpData, setOtpData] = useState({
+    userId: '',
+    otpId: '',
+    email: ''
+  });
+  
+  // Get the redirect path and message from location state
+  const from = location.state?.from || '/';
+  const message = location.state?.message;
 
   useEffect(() => {
+    // Display message if provided in location state
+    if (message) {
+      toast.info(message);
+    }
+    
+    // Handle OAuth token
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (token) {
       localStorage.setItem('token', token);
       checkAuthStatus();
-      navigate('/');
+      navigate(from);
     }
-  }, [navigate, checkAuthStatus]);
+  }, [navigate, checkAuthStatus, from, message]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -45,16 +66,108 @@ const Login = () => {
     }
 
     try {
-      const response = await login(formData.identifier, formData.password);
+      // Try to login with OTP requirement
+      const response = await login(formData.identifier, formData.password, true);
+      
       if (response.success) {
-        navigate('/');
+        // Check if OTP verification is required
+        if (response.requireOTP) {
+          // Store user ID and email
+          setOtpData({
+            userId: response.userId,
+            email: response.email,
+            otpId: '' // Will be set after sending OTP
+          });
+          
+          // Send OTP to the user's email
+          const otpResponse = await sendOTP(response.email);
+          
+          if (otpResponse.success) {
+            setOtpData(prev => ({
+              ...prev,
+              otpId: otpResponse.otpId,
+              previewUrl: otpResponse.previewUrl,
+              devMode: otpResponse.devMode || false
+            }));
+            
+            // Show OTP verification modal
+            setShowOTP(true);
+            
+            // If we have a preview URL (for development), show it
+            if (otpResponse.previewUrl) {
+              toast.info(
+                <div>
+                  Verification code sent! 
+                  <a 
+                    href={otpResponse.previewUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{display: 'block', marginTop: '8px', color: '#4a90e2'}}
+                  >
+                    Click here to view the email
+                  </a>
+                </div>,
+                { autoClose: false }
+              );
+            }
+          } else {
+            setError(otpResponse.message || 'Failed to send verification code');
+          }
+        } else {
+          // No OTP required, proceed with login
+          toast.success('Login successful!');
+          navigate(from);
+        }
       } else {
-        setError(response.error || 'Invalid credentials');
+        setError(response.message || 'Invalid credentials');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.message || 'An error occurred during login');
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Handle OTP verification
+  const handleVerifyOTP = async (otpCode) => {
+    setIsLoading(true);
+    
+    try {
+      const response = await verifyLoginOTP(otpData.userId, otpData.otpId, otpCode);
+      
+      if (response.success) {
+        toast.success('Login successful!');
+        setShowOTP(false);
+        navigate(from);
+      } else {
+        toast.error(response.message || 'Invalid verification code');
+      }
+    } catch (error) {
+      console.error('OTP verification error:', error);
+      toast.error('Failed to verify code. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Handle resend OTP
+  const handleResendOTP = async () => {
+    try {
+      const response = await sendOTP(otpData.userId);
+      
+      if (response.success) {
+        setOtpData(prev => ({
+          ...prev,
+          otpId: response.otpId
+        }));
+        toast.info('A new verification code has been sent');
+      } else {
+        toast.error(response.message || 'Failed to resend verification code');
+      }
+    } catch (error) {
+      console.error('Resend OTP error:', error);
+      toast.error('Failed to resend code. Please try again.');
     }
   };
 
@@ -69,6 +182,19 @@ const Login = () => {
               <p className="login-subtitle">Please login to your account</p>
 
               {error && <div className="error-message">{error}</div>}
+              
+              {/* OTP Verification Modal */}
+              {showOTP && (
+                <OTPVerification
+                  email={otpData.email}
+                  onVerify={handleVerifyOTP}
+                  onCancel={() => setShowOTP(false)}
+                  onResend={handleResendOTP}
+                  isLoading={isLoading}
+                  previewUrl={otpData.previewUrl}
+                  devMode={otpData.devMode}
+                />
+              )}
 
               <form onSubmit={handleSubmit}>
                 <div className="form-group">

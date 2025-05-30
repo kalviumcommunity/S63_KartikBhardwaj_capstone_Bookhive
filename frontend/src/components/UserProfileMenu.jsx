@@ -19,11 +19,17 @@ const menuItems = [
     to: '/my-reviews',
   },
   {
-    label: 'Bookmarks',
+    label: 'My Books',
     icon: (
       <svg width="22" height="22" fill="none" stroke="#333" strokeWidth="1.7" viewBox="0 0 24 24"><path d="M6 4a2 2 0 0 0-2 2v14l8-5 8 5V6a2 2 0 0 0-2-2z"/></svg>
     ),
-    to: '/bookmarks',
+    to: '/profile',
+    action: (navigate) => {
+      // Navigate to profile and set the active tab to 'books'
+      navigate('/profile');
+      // Store the active tab in localStorage so it can be retrieved in UserProfile
+      localStorage.setItem('profileActiveTab', 'books');
+    }
   },
 ];
 
@@ -43,9 +49,13 @@ const UserProfileMenu = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open]);
 
-  const handleMenuClick = (to) => {
+  const handleMenuClick = (item) => {
     setOpen(false);
-    navigate(to);
+    if (item.action) {
+      item.action(navigate);
+    } else {
+      navigate(item.to);
+    }
   };
 
   const handleLogout = () => {
@@ -65,7 +75,7 @@ const UserProfileMenu = () => {
             <div
               className="user-profile-menu-item"
               key={item.label}
-              onClick={() => handleMenuClick(item.to)}
+              onClick={() => handleMenuClick(item)}
             >
               {item.icon}
               <span>{item.label}</span>

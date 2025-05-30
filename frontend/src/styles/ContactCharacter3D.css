@@ -1,0 +1,53 @@
+.character-scene-container {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Character shadow effect */
+.character-scene-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 20px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 70%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .character-scene-container {
+    min-height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .character-scene-container {
+    min-height: 400px;
+  }
+  
+  .character-scene-container::after {
+    width: 50%;
+    height: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .character-scene-container {
+    min-height: 350px;
+  }
+  
+  .character-scene-container::after {
+    width: 40%;
+    height: 10px;
+  }
+}

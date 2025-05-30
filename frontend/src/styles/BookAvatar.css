@@ -1,0 +1,368 @@
+/* BookAvatar.css */
+
+.book-avatar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Size variations */
+.book-avatar-container.small .book-character {
+  width: 80px;
+  height: 120px;
+}
+
+.book-avatar-container.medium .book-character {
+  width: 120px;
+  height: 180px;
+}
+
+.book-avatar-container.large .book-character {
+  width: 160px;
+  height: 240px;
+}
+
+/* Position variations */
+.book-avatar-container.corner {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.book-avatar-container.center {
+  margin: 0 auto;
+}
+
+.book-avatar-container.floating {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Book character styles */
+.book-character {
+  position: relative;
+  cursor: pointer;
+  animation: bounce 3s infinite ease-in-out;
+  transform-origin: bottom center;
+  transition: all 0.3s ease;
+}
+
+.book-character:hover {
+  transform: scale(1.05);
+}
+
+.book-character.waving .arm.right {
+  animation: wave 1s ease-in-out;
+}
+
+.book-character.jumping {
+  animation: jump 0.5s ease-in-out;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes jump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.1); }
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(-15deg); }
+  50% { transform: rotate(-60deg); }
+}
+
+.book-body {
+  position: relative;
+  width: 70%;
+  height: 60%;
+  margin: 0 auto;
+  background-color: #3b82f6;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: perspective(300px) rotateY(-15deg);
+  animation: pageFlip 4s infinite ease-in-out;
+}
+
+@keyframes pageFlip {
+  0%, 100% { transform: perspective(300px) rotateY(-15deg); }
+  50% { transform: perspective(300px) rotateY(-25deg); }
+}
+
+.book-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4f8ef7, #2563eb);
+  border-radius: 5px;
+  z-index: 2;
+}
+
+.book-pages {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  background-color: #fff;
+  border-radius: 3px;
+  z-index: 1;
+}
+
+.book-binding {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 100%;
+  background-color: #1e40af;
+  z-index: 3;
+}
+
+/* Character face */
+.character-face {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 30%;
+  background-color: #ffcc80;
+  border-radius: 50%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.character-eyes {
+  display: flex;
+  justify-content: space-between;
+  width: 60%;
+  margin-bottom: 10%;
+}
+
+.eye {
+  width: 20%;
+  height: 20%;
+  background-color: #333;
+  border-radius: 50%;
+  position: relative;
+  animation: blink 4s infinite;
+}
+
+@keyframes blink {
+  0%, 45%, 55%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.1); }
+}
+
+.eye::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  width: 30%;
+  height: 30%;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.character-mouth {
+  width: 40%;
+  height: 15%;
+  border-bottom: 3px solid #333;
+  border-radius: 0 0 10px 10px;
+  animation: talk 2s infinite;
+}
+
+@keyframes talk {
+  0%, 100% { transform: scaleY(1); width: 40%; }
+  30% { transform: scaleY(0.8); width: 30%; }
+  60% { transform: scaleY(1.2); width: 50%; }
+}
+
+/* Character limbs */
+.character-arms {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  z-index: 3;
+}
+
+.arm {
+  width: 10%;
+  height: 30%;
+  background-color: #ffcc80;
+  border-radius: 5px;
+}
+
+.arm.left {
+  transform: rotate(15deg);
+  transform-origin: top center;
+  animation: waveLeft 3s infinite;
+}
+
+.arm.right {
+  transform: rotate(-15deg);
+  transform-origin: top center;
+  animation: waveRight 3s infinite;
+}
+
+@keyframes waveLeft {
+  0%, 100% { transform: rotate(15deg); }
+  50% { transform: rotate(30deg); }
+}
+
+@keyframes waveRight {
+  0%, 100% { transform: rotate(-15deg); }
+  50% { transform: rotate(-30deg); }
+}
+
+.character-legs {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  z-index: 2;
+}
+
+.leg {
+  width: 10%;
+  height: 20%;
+  background-color: #ffcc80;
+  border-radius: 5px;
+}
+
+.leg.left {
+  animation: kickLeft 2s infinite ease-in-out;
+}
+
+.leg.right {
+  animation: kickRight 2s infinite ease-in-out;
+}
+
+@keyframes kickLeft {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(-15deg); }
+}
+
+@keyframes kickRight {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(15deg); }
+}
+
+/* Speech bubble */
+.speech-bubble {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 200px;
+  min-height: 80px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.5s forwards;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.speech-bubble:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  bottom: -15px;
+  border-width: 15px 15px 0;
+  border-style: solid;
+  border-color: white transparent transparent;
+}
+
+.speech-bubble p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+/* Size adjustments for speech bubble */
+.book-avatar-container.small .speech-bubble {
+  width: 150px;
+  min-height: 60px;
+  font-size: 0.8rem;
+  padding: 10px;
+}
+
+.book-avatar-container.large .speech-bubble {
+  width: 250px;
+  min-height: 100px;
+  font-size: 1rem;
+  padding: 20px;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .book-avatar-container.corner,
+  .book-avatar-container.floating {
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .book-avatar-container.medium .book-character {
+    width: 100px;
+    height: 150px;
+  }
+  
+  .speech-bubble {
+    width: 180px;
+    min-height: 70px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-avatar-container.medium .book-character {
+    width: 80px;
+    height: 120px;
+  }
+  
+  .speech-bubble {
+    width: 150px;
+    min-height: 60px;
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+}

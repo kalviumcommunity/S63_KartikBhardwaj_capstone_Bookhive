@@ -1,19 +1,34 @@
 .featured-books {
-  padding: 3rem 6rem;
+  padding: 4rem 6rem;
   background-color: var(--bg-primary, #fdf6e3);
+  margin: 2rem 0;
 }
 
 .featured-books h2 {
   text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2.2rem;
+  margin-bottom: 2.5rem;
+  font-size: 2.5rem;
   color: var(--text-primary, #333);
+  font-weight: 700;
+  position: relative;
+}
+
+.featured-books h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--accent-color, #3b82f6);
+  border-radius: 3px;
 }
 
 .carousel-container {
   width: 100%;
   margin: 0 auto 2rem;
-  min-height: 450px;
+  min-height: 650px;
 }
 
 .book-grid {
@@ -111,19 +126,53 @@
 .see-all-btn {
   display: block;
   width: fit-content;
-  margin: 0 auto;
-  background-color: transparent;
-  color: var(--text-primary, #333);
-  border: 2px solid var(--accent-color, #f0f0ff);
-  padding: 0.8rem 2rem;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 500;
+  margin: 1rem auto 0;
+  background-color: var(--accent-color, #3b82f6);
+  color: white !important; /* Force white text color */
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 30px;
+  text-decoration: none !important; /* Prevent underline */
+  font-weight: 600;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+  outline: none; /* Remove outline */
+}
+
+.see-all-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
 }
 
 .see-all-btn:hover {
-  background-color: var(--accent-color, #f0f0ff);
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+  color: white !important;
+}
+
+.see-all-btn:active,
+.see-all-btn:focus,
+.see-all-btn:visited {
+  color: white !important;
+  background-color: #2563eb;
+  text-decoration: none !important;
+  outline: none;
+}
+
+.see-all-btn:active::before {
+  transform: translateX(0);
 }
 
 .loading {
@@ -134,12 +183,17 @@
 
 @media (max-width: 768px) {
   .featured-books {
-    padding: 2rem 1rem;
+    padding: 3rem 1rem;
+    margin: 1rem 0;
   }
   
   .book-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.5rem;
+  }
+  
+  .carousel-container {
+    min-height: 550px;
   }
 } 
 

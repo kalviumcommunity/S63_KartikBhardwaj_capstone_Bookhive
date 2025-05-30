@@ -1,0 +1,8 @@
+Please add a book placeholder image named "book-placeholder.png" in this directory.
+
+This image will be used as a fallback for books that don't have cover images from the Open Library API.
+
+Recommended specifications:
+- Size: 300x450 pixels
+- Format: PNG with transparency
+- Content: Simple book icon or silhouette

@@ -56,8 +56,11 @@ router.get('/works/:bookId', async (req, res) => {
 // POST: Add a review to a book
 router.post('/works/:bookId/review', auth, async (req, res) => {
   try {
-    const { review, rating, userId } = req.body;
+    const { review, rating } = req.body;
     const bookId = req.params.bookId;
+    const userId = req.user._id; // Get user ID from auth middleware
+
+    console.log('Adding review:', { bookId, userId, rating, review });
 
     // Validate rating
     if (!rating || rating < 1 || rating > 5) {

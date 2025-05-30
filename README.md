@@ -42,14 +42,14 @@ Explore, engage, and grow your passion for books with a like-minded community!
 . Frontend: React.js, Tailwind CSS, React Router
 . Backend: Node.js, Express.js, JWT Authentication
 . Database: MongoDB + Mongoose
-. Integrations: Google Books API, Firebase Auth (Google Sign-In)
+. Integrations: Google Books API, Firebase Auth (Google Sign-In), Email OTP Verification
 . Deployment: Vercel (Frontend), Render (Backend), MongoDB Atlas (Database)
 
 
 ### UI Flow:
 
 . Landing Page: Hero section, search bar, featured carousel, CTA buttons
-. Authentication: Signup/Login, Google OAuth, password recovery
+. Authentication: Signup/Login, Email OTP Verification, Google OAuth, password recovery
 . Dashboard: Book filters, grid listings, detail modals, review section
 . Profile Page: User stats, recent reviews, wishlist, settings
 . Admin Panel: Manage reported reviews, books, and users\
@@ -109,3 +109,22 @@ BookHive blends technology with a passion for reading, offering a complete commu
 
 Frontend Deployment Link - "https://bookhiveee.netlify.app/"
 Backend Deployment Link - "https://bookhivemernapi.onrender.com/"
+
+### Email OTP Verification System
+
+BookHive includes an email verification system that uses One-Time Passwords (OTPs) to verify user email addresses during signup. This ensures that users provide valid email addresses and helps prevent spam accounts.
+
+#### How it works:
+
+1. When a user signs up, an OTP is generated and displayed in the server console
+2. The user needs to enter this OTP to verify their email address
+3. Once verified, the user's account is marked as email-verified
+
+#### For Developers:
+
+For detailed information about the OTP verification system, see the following files:
+- `backend/OTP_VERIFICATION_GUIDE.md` - Guide for using the OTP verification system
+- `backend/services/hybridOtpService.js` - Implementation of the OTP service
+- `backend/routes/auth.js` - API routes for authentication and OTP verification
+
+To implement real email delivery in production, you'll need to update the OTP service to use an email service provider like SendGrid, Mailgun, or AWS SES.

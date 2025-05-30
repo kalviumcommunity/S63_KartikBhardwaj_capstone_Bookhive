@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-// Static placeholder images
+// Static placeholder images (using local files)
 const PLACEHOLDER_IMAGES = {
-  default: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/master/assets/Book/SVG/ic_fluent_book_24_regular.svg',
-  error: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/master/assets/Book/SVG/ic_fluent_book_error_24_regular.svg'
+  default: '/images/book-covers/default-book.jpg',
+  error: '/images/book-covers/default-book.jpg'
 };
 
 const BookCover = ({ 
@@ -22,27 +22,36 @@ const BookCover = ({
   const getSources = () => {
     const sources = [];
 
-    // Primary source - direct image URL
+    // Primary source - direct image URL (could be an array)
     if (book.imageUrl) {
-      sources.push({
-        type: 'direct',
-        url: book.imageUrl
-      });
+      if (Array.isArray(book.imageUrl)) {
+        book.imageUrl.forEach(url => sources.push({ type: 'direct', url }));
+        console.log('Attempting to load primary image URLs (array):', book.imageUrl);
+      } else {
+        sources.push({ type: 'direct', url: book.imageUrl });
+        console.log('Attempting to load primary image URL (single):', book.imageUrl);
+      }
     }
 
     // Alternative source
     if (book.alternativeCoverUrl) {
-      sources.push({
-        type: 'alternative',
-        url: book.alternativeCoverUrl
-      });
+       sources.push({ type: 'alternative', url: book.alternativeCoverUrl });
+       console.log('Attempting to load alternative image URL:', book.alternativeCoverUrl);
     }
+
+    // Additional sources (if any)
+    if (book.additionalImageUrls && Array.isArray(book.additionalImageUrls)) {
+        book.additionalImageUrls.forEach(url => sources.push({ type: 'additional', url }));
+        console.log('Attempting to load additional image URLs:', book.additionalImageUrls);
+    }
+
 
     // Default placeholder
     sources.push({
       type: 'placeholder',
       url: PLACEHOLDER_IMAGES.default
     });
+    console.log('Attempting to load placeholder image URL:', PLACEHOLDER_IMAGES.default);
 
     return sources;
   };
@@ -53,15 +62,18 @@ const BookCover = ({
       const img = new Image();
       
       const timeoutId = setTimeout(() => {
+        console.error('Image load timeout for URL:', url);
         reject(new Error('Image load timeout'));
       }, 3000);
 
       img.onload = () => {
+        console.log('Image loaded successfully for URL:', url);
         clearTimeout(timeoutId);
         resolve(url);
       };
       
       img.onerror = () => {
+        console.error('Image failed to load for URL:', url);
         clearTimeout(timeoutId);
         reject(new Error('Image load failed'));
       };
@@ -73,6 +85,7 @@ const BookCover = ({
   // Try loading the next available source
   const tryNextSource = async (sources, currentIndex = 0) => {
     if (currentIndex >= sources.length) {
+      console.log('All image sources failed to load.');
       setCurrentSource({ type: 'error', url: PLACEHOLDER_IMAGES.error });
       setHasError(true);
       setIsLoading(false);
@@ -82,6 +95,7 @@ const BookCover = ({
 
     try {
       const source = sources[currentIndex];
+      console.log('Trying source:', source.type, source.url);
       await preloadImage(source.url);
       setCurrentSource(source);
       setIsLoading(false);
@@ -112,7 +126,7 @@ const BookCover = ({
       setIsLoading(false);
       setHasError(false);
     };
-  }, [book.imageUrl, book.alternativeCoverUrl]);
+  }, [book.imageUrl, book.alternativeCoverUrl, book.additionalImageUrls]);
 
   // Size classes for different display contexts
   const sizeClasses = {
@@ -139,6 +153,7 @@ const BookCover = ({
           className={`book-cover ${hasError ? 'error' : ''}`}
           loading="lazy"
           onError={() => {
+            console.log('onError triggered for current source:', currentSource.url);
             const sources = getSources();
             const currentIndex = sources.findIndex(s => s.url === currentSource.url);
             if (currentIndex !== -1) {
@@ -162,8 +177,9 @@ BookCover.propTypes = {
   book: PropTypes.shape({
     title: PropTypes.string.isRequired,
     author: PropTypes.string.isRequired,
-    imageUrl: PropTypes.string,
-    alternativeCoverUrl: PropTypes.string
+    imageUrl: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    alternativeCoverUrl: PropTypes.string,
+    additionalImageUrls: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   className: PropTypes.string,

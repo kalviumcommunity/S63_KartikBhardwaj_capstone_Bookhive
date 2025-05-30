@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import './BookDetailsModal.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { generateAmazonLink } from '../utils/affiliateLinks';
 
 const StarRating = ({ rating, onRatingChange }) => {
   const [hover, setHover] = useState(0);
@@ -231,6 +232,30 @@ const BookDetailsModal = ({ isOpen, onClose, book, additionalDetails }) => {
                 {additionalDetails.isbn && <p className="isbn">ISBN: {additionalDetails.isbn}</p>}
               </div>
             )}
+            
+            <div style={{ marginTop: '1rem' }}>
+              <a 
+                href={generateAmazonLink(book.title, book.author)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  backgroundColor: '#FF9900',
+                  color: '#000',
+                  padding: '0.6rem 1rem',
+                  borderRadius: '4px',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                  fontSize: '0.9rem',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span style={{ fontSize: '1.1rem' }}>🛒</span>
+                Buy on Amazon
+              </a>
+            </div>
           </div>
         </div>
 

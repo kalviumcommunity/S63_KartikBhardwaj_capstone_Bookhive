@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BookCover from './BookCover';
 import '../styles/Hero.css';
 
 const Hero = () => {
@@ -146,13 +147,20 @@ const Hero = () => {
   return (
     <section className="hero">
       <div className="hero-text">
-        <h1>Discover Your Next Favorite Read Today!</h1>
+        <div className="site-title">
+          <h1 className="main-title">BookHive</h1>
+          <p className="tagline">Your Literary Community</p>
+        </div>
+        <h2 className="hero-heading">Discover Your Next Favorite Read Today!</h2>
         <p>
           Dive into a world of books with honest reviews from fellow readers.
           <br />
           Start your journey to find the perfect book that resonates with you!
         </p>
-        <button className="explore-btn" onClick={() => navigate('/books')}>Explore</button>
+        <div className="hero-buttons">
+          <button className="explore-btn" onClick={() => navigate('/books')}>Explore Books</button>
+          <button className="mood-btn" onClick={() => navigate('/mood-matcher')}>Find Books by Mood</button>
+        </div>
       </div>
       
       <div className="hero-image">
@@ -166,7 +174,11 @@ const Hero = () => {
                 onClick={() => index === currentSlide && openBookDetail(book)}
               >
                 <div className="book-cover-wrapper">
-                  <img src={book.image} alt={book.title} className="book-cover" />
+                  <BookCover 
+                    book={{ imageUrl: book.image, title: book.title, author: book.author }}
+                    size="medium"
+                    className="book-cover"
+                  />
                   <div className="book-info">
                     <h3>{book.title}</h3>
                     <p>{book.author}</p>

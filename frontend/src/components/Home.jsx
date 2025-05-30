@@ -4,6 +4,12 @@ import HeroSection from './HeroSection';
 import ExploreCategories from './ExploreCategories';
 import FeaturedBooks from './FeaturedBooks';
 import TopAuthors from './TopAuthors';
+import BookOfTheMonth from './BookOfTheMonth';
+import PopularCategories from './PopularCategories';
+import RecentReviews from './RecentReviews';
+import ReadingStats from './ReadingStats';
+
+import CommunityCTA from './CommunityCTA';
 import '../styles/Home.css';
 
 const Home = () => {
@@ -13,8 +19,12 @@ const Home = () => {
       <HeroSection />
       <div className="main-content">
         <ExploreCategories />
-        <FeaturedBooks />
+        <BookOfTheMonth />
+        <PopularCategories />
         <TopAuthors />
+        <RecentReviews />
+        <ReadingStats />
+        <CommunityCTA />
       </div>
     </div>
   );

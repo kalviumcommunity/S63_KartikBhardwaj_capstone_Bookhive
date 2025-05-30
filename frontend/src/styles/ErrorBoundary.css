@@ -1,0 +1,153 @@
+.error-boundary {
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.error-boundary h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.retry-button, 
+.clear-cache-button {
+  padding: 0.8rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 1rem;
+}
+
+.retry-button {
+  background: linear-gradient(135deg, #4361ee, #7209b7);
+  color: white;
+  box-shadow: 0 4px 15px rgba(67, 97, 238, 0.2);
+}
+
+.clear-cache-button {
+  background: #f1f1f1;
+  color: #555;
+}
+
+.retry-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+}
+
+.clear-cache-button:hover {
+  background: #e5e5e5;
+  transform: translateY(-3px);
+}
+
+.retry-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.retry-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(67, 97, 238, 0.2);
+  border-radius: 50%;
+  border-top-color: #4361ee;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.retry-progress p {
+  color: #666;
+  font-size: 1rem;
+}
+
+.error-details {
+  margin-top: 2rem;
+  text-align: left;
+  width: 100%;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.error-details summary {
+  cursor: pointer;
+  color: #4361ee;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.error-details p {
+  font-family: monospace;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-wrap: break-word;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .error-boundary {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .error-actions {
+    flex-direction: column;
+  }
+  
+  .retry-button, 
+  .clear-cache-button {
+    width: 100%;
+  }
+}

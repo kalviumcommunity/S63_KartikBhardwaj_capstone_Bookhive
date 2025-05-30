@@ -3,6 +3,10 @@ import Navbar from './Navbar';
 import BookDetailsModal from './BookDetailsModal';
 import '../styles/Books.css';
 import { useNavigate } from 'react-router-dom';
+import { generateAmazonLink } from '../utils/affiliateLinks';
+import { useBookmarks } from '../context/BookmarkContext';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const Books = () => {
   const [books, setBooks] = useState({
@@ -17,6 +21,7 @@ const Books = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookDetails, setBookDetails] = useState(null);
   const navigate = useNavigate();
+  const { addBookmark, removeBookmark, isBookmarked } = useBookmarks();
 
   // Create refs for each category's scroll container
   const scrollContainers = {
@@ -118,12 +123,39 @@ const Books = () => {
     setSelectedBook(null);
     setBookDetails(null);
   };
+  
+  const handleToggleBookmark = (e, book) => {
+    e.stopPropagation(); // Prevent triggering the parent onClick
+    
+    const bookData = {
+      key: book.key.replace('/works/', ''),
+      title: book.title,
+      author: book.author_name,
+      coverUrl: book.coverUrl,
+      largeCoverUrl: book.largeCoverUrl
+    };
+    
+    if (isBookmarked(bookData.key)) {
+      removeBookmark(bookData.key);
+      toast.success(`Removed "${book.title}" from bookmarks`);
+    } else {
+      addBookmark(bookData);
+      toast.success(`Added "${book.title}" to bookmarks`);
+    }
+  };
 
   const scroll = (direction, category) => {
     const container = scrollContainers[category].current;
     if (container) {
-      const scrollAmount = direction === 'left' ? -300 : 300;
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      // Calculate the width of a book card plus gap (130px total)
+      const bookWidth = 130;
+      // Scroll by 3 books at a time for a carousel effect
+      const scrollAmount = direction === 'left' ? -bookWidth * 3 : bookWidth * 3;
+      
+      container.scrollBy({ 
+        left: scrollAmount, 
+        behavior: 'smooth' 
+      });
     }
   };
 
@@ -131,7 +163,10 @@ const Books = () => {
     return (
       <div className="books-page">
         <Navbar />
-        <div className="loading">Loading books...</div>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <div className="loading">Finding books on the shelf...</div>
+        </div>
       </div>
     );
   }
@@ -148,10 +183,19 @@ const Books = () => {
     <div className="books-page">
       <Navbar />
       <div className="books-container">
-        <h1>Explore Books</h1>
+        <div className="books-header">
+          <h1>Explore Books</h1>
+          <p className="books-subtitle">
+            Browse our virtual bookshelves and discover your next great read
+          </p>
+        </div>
+        
         {categories.map((category) => (
           <div key={category.id} className="category-section">
-            <h2>{category.title}</h2>
+            <div className="category-header">
+              <h2>{category.title}</h2>
+              <a href="#" className="view-all-link">View All</a>
+            </div>
             <div className="books-grid-container">
               <button 
                 className="scroll-button scroll-left" 
@@ -173,7 +217,12 @@ const Books = () => {
                     key={bookIndex} 
                     className="book-card"
                     onClick={() => handleBookClick(book)}
+                    style={{ 
+                      animationDelay: `${bookIndex * 0.05}s`,
+                      zIndex: category.books.length - bookIndex
+                    }}
                   >
+                    <div className="book-spine"></div>
                     <div className="book-image-wrapper">
                       <img 
                         src={book.coverUrl || '/default-book-cover.jpg'} 
@@ -187,11 +236,33 @@ const Books = () => {
                           }
                         }}
                       />
+                      <button 
+                        className="bookmark-button"
+                        onClick={(e) => handleToggleBookmark(e, book)}
+                        aria-label={isBookmarked(book.key.replace('/works/', '')) ? "Remove from bookmarks" : "Add to bookmarks"}
+                      >
+                        {isBookmarked(book.key.replace('/works/', '')) ? 
+                          <FaBookmark className="bookmark-icon bookmarked" /> : 
+                          <FaRegBookmark className="bookmark-icon" />
+                        }
+                      </button>
                     </div>
                     <div className="book-info">
                       <h3 className="book-title">{book.title}</h3>
-                      <p className="book-author">{book.author_name?.[0] || 'Unknown Author'}</p>
+                      <p className="book-author">{book.author_name || 'Unknown Author'}</p>
+                      <a 
+                        href={generateAmazonLink(book.title, book.author_name || 'Unknown Author')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="book-amazon-link"
+                        onClick={(e) => e.stopPropagation()} // Prevent triggering the parent onClick
+                      >
+                        🛒 Buy on Amazon
+                      </a>
                     </div>
+                    {book.first_publish_year && (
+                      <div className="book-year">{book.first_publish_year}</div>
+                    )}
                   </div>
                 ))}
               </div>

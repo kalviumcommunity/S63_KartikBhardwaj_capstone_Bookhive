@@ -1,0 +1,12 @@
+<svg width="200" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff758c"/>
+      <stop offset="100%" stop-color="#ff7eb3"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="300" fill="url(#grad)"/>
+  <rect x="20" y="20" width="160" height="260" fill="none" stroke="#fff" stroke-width="2"/>
+  <text x="50%" y="45%" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="#fff">Romance</text>
+  <text x="50%" y="55%" font-family="Arial, sans-serif" font-size="15" text-anchor="middle" fill="#fff">BookHive</text>
+</svg>

@@ -20,37 +20,39 @@ const HeroSection = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Using local images
     const featuredBooks = [
       {
         id: 1,
         title: "The Secret",
         author: "Rhonda Byrne",
-        imageUrl: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1586566916i/52529964.jpg",
-        alternativeCoverUrl: "https://m.media-amazon.com/images/I/51fVPhnxB1L._SY291_BO1,204,203,200_QL40_FMwebp_.jpg"
+        imageUrl: "/images/book-covers/the-secret.jpg",
+        alternativeCoverUrl: "/images/book-covers/default-book.jpg"
       },
       {
         id: 2,
-        title: "Girlsophy: A Soul Survival Kit",
-        author: "Anthea Paul",
-        imageUrl: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1388439854i/212251.jpg",
-        alternativeCoverUrl: "https://m.media-amazon.com/images/I/51G6NJG7D1L._SY291_BO1,204,203,200_QL40_FMwebp_.jpg"
+        title: "Harry Potter and the Sorcerer's Stone",
+        author: "J.K. Rowling",
+        imageUrl: "/images/book-covers/harry-potter.jpg",
+        alternativeCoverUrl: "/images/book-covers/fantasy-book.jpg"
       },
       {
         id: 3,
-        title: "How to Pass Exams",
-        author: "Dominic O'Brien",
-        imageUrl: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1387703134i/850031.jpg",
-        alternativeCoverUrl: "https://m.media-amazon.com/images/I/51ZXQH5NKML._SY291_BO1,204,203,200_QL40_FMwebp_.jpg"
+        title: "The Hobbit",
+        author: "J.R.R. Tolkien",
+        imageUrl: "/images/book-covers/the-hobbit.jpg",
+        alternativeCoverUrl: "/images/book-covers/fantasy-book.jpg"
       },
       {
         id: 4,
-        title: "Wuthering Heights",
-        author: "Emily Brontë",
-        imageUrl: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1388212715i/6185.jpg",
-        alternativeCoverUrl: "https://m.media-amazon.com/images/I/41jNofZ6e8L._SY291_BO1,204,203,200_QL40_FMwebp_.jpg"
+        title: "Pride and Prejudice",
+        author: "Jane Austen",
+        imageUrl: "/images/book-covers/pride-and-prejudice.jpg",
+        alternativeCoverUrl: "/images/book-covers/fiction-book.jpg"
       }
     ];
 
+    // Set books immediately - no loading state needed
     setBooks(featuredBooks);
     setLoading(false);
   }, []);
@@ -102,7 +104,7 @@ const HeroSection = () => {
                   onError={() => {
                     console.warn(`Failed to load cover for ${book.title}`);
                     // If both primary and alternative URLs fail, use the default SVG icon
-                    book.imageUrl = 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/master/assets/Book/SVG/ic_fluent_book_24_regular.svg';
+                    book.imageUrl = '/images/book-covers/default-book.jpg';
                   }}
                 />
               </Link>
