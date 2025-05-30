@@ -157,28 +157,58 @@
 .otp-inputs {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 25px;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding: 10px 0;
+  position: relative;
+}
+
+/* Add a subtle guide line under the inputs */
+.otp-inputs::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(74, 144, 226, 0.1) 20%, 
+    rgba(74, 144, 226, 0.1) 80%, 
+    transparent 100%
+  );
+  border-radius: 2px;
 }
 
 .otp-inputs input {
-  width: 45px;
-  height: 55px;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
+  width: 50px;
+  height: 60px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 2rem;
+  font-weight: 700;
   color: #333;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  background-color: #f9f9f9;
+  -webkit-text-security: none;
+  -moz-text-security: none;
+  text-security: none;
+  -webkit-text-fill-color: #333;
+  caret-color: #4a90e2;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 0;
 }
 
 .otp-inputs input:focus {
   border-color: #4a90e2;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
   transform: translateY(-2px);
+  background-color: #fff;
 }
 
 /* Animation for input focus */
@@ -190,6 +220,14 @@
 
 .otp-inputs input:focus {
   animation: pulse 1.5s infinite;
+}
+
+/* Add a filled state for better visibility */
+.otp-inputs input.filled {
+  background-color: #f0f7ff;
+  border-color: #4a90e2;
+  color: #333;
+  font-weight: 700;
 }
 
 /* Timer */
@@ -391,13 +429,14 @@
   }
   
   .otp-inputs {
-    gap: 6px;
+    gap: 8px;
   }
   
   .otp-inputs input {
-    width: 40px;
-    height: 50px;
-    font-size: 1.3rem;
+    width: 45px;
+    height: 55px;
+    font-size: 1.8rem;
+    border-radius: 10px;
   }
   
   .main-actions {
@@ -406,5 +445,18 @@
   
   .cancel-button, .verify-button {
     width: 100%;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 360px) {
+  .otp-inputs {
+    gap: 6px;
+  }
+  
+  .otp-inputs input {
+    width: 40px;
+    height: 50px;
+    font-size: 1.6rem;
   }
 }
