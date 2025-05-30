@@ -1,0 +1,88 @@
+.book-of-month-section {
+  background-color: #fff;
+  padding: 4rem 2rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.book-of-month-container {
+  display: flex;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 3rem;
+  align-items: center;
+}
+
+.book-cover {
+  flex: 0 0 300px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.book-cover:hover {
+  transform: translateY(-10px);
+}
+
+.book-cover img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.book-details {
+  flex: 1;
+}
+
+.book-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #1a202c;
+}
+
+.book-author {
+  font-size: 1.2rem;
+  color: #6a11cb;
+  margin-bottom: 1rem;
+}
+
+.book-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: #f59e0b;
+  font-size: 1.1rem;
+}
+
+.book-description {
+  color: #4a5568;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+.read-more-button {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.read-more-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 768px) {
+  .book-of-month-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .book-cover {
+    margin: 0 auto 2rem;
+  }
+}
