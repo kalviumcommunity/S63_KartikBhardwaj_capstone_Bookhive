@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"context/LoadingContext.js -> ../components/LoadingAvatar\":{\"id\":\"context/LoadingContext.js -> ../components/LoadingAvatar\",\"files\":[\"static/chunks/_pages-dir-browser_components_LoadingAvatar_js.js\"]}}"
