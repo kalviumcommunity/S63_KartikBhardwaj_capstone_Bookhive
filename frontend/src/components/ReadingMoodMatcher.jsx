@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMoodBasedBooks } from '../utils/fallbackData';
+import { backendAPI } from '../utils/axiosConfig';
 import '../styles/ReadingMoodMatcher.css';
 
 const ReadingMoodMatcher = () => {
@@ -104,7 +105,48 @@ const ReadingMoodMatcher = () => {
         throw new Error('Invalid mood selected');
       }
 
-      // Randomly select one genre from the mood's genres
+      // First try to get AI-powered recommendations
+      try {
+        console.log(`Getting AI recommendations for mood: ${selectedMoodObj.label}`);
+        const aiResponse = await backendAPI.post('/api/ai/mood-recommendations', {
+          mood: selectedMoodObj.label
+        });
+        
+        // If AI recommendations are successful, use them
+        if (aiResponse.data && aiResponse.data.recommendations) {
+          console.log('AI recommendations received:', aiResponse.data.recommendations);
+          
+          // Check if these are fallback recommendations
+          if (aiResponse.data.isFallback) {
+            console.log('Using fallback recommendations from server');
+          }
+          
+          // Convert AI recommendations to the format expected by the component
+          const aiBooks = aiResponse.data.recommendations.map((book, index) => ({
+            title: book.title,
+            author: book.author,
+            key: `/works/ai-book-${index}`,
+            coverUrl: `/default-book-cover.jpg`, // We'll use default covers for AI recommendations
+            description: book.description,
+            reason: book.reason,
+            genre: book.genre,
+            isFallback: aiResponse.data.isFallback
+          }));
+          
+          if (aiBooks && aiBooks.length > 0) {
+            setRecommendedBooks(aiBooks);
+            setAnimationPhase('results');
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (aiError) {
+        console.error('AI recommendations failed, falling back to API:', aiError);
+        // Continue to fallback method
+      }
+
+      // Fallback to the original Open Library API method
+      console.log('Falling back to Open Library API');
       const randomGenre = selectedMoodObj.genres[Math.floor(Math.random() * selectedMoodObj.genres.length)];
       
       // Use fetch instead of axios to avoid potential CORS issues
@@ -304,6 +346,11 @@ const ReadingMoodMatcher = () => {
                     <div>
                       <h4 className="book-title">{book.title}</h4>
                       <p className="book-author">by {book.author}</p>
+                      {book.reason && (
+                        <p className="book-reason">
+                          <em>Why it fits your mood:</em> {book.reason}
+                        </p>
+                      )}
                     </div>
                     <div>
                       {book.firstPublishYear && (
@@ -313,6 +360,15 @@ const ReadingMoodMatcher = () => {
                             <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
                           </svg>
                           {book.firstPublishYear}
+                        </p>
+                      )}
+                      {book.genre && (
+                        <p className="book-genre">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" style={{ marginRight: '4px' }}>
+                            <path d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z"/>
+                            <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a.5.5 0 0 1-.708 0l-7-7z"/>
+                          </svg>
+                          {book.genre}
                         </p>
                       )}
                     </div>

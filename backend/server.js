@@ -7,6 +7,7 @@ const bookRoutes = require('./routes/bookRoutes');
 const authRoutes = require('./routes/auth');
 const reviewRequestRoutes = require('./routes/reviewRequestRoutes');
 const otpRoutes = require('./routes/otp');
+const aiRoutes = require('./routes/aiRoutes');
 const seedBooks = require('./openServer'); 
 const path = require('path');
 const session = require('express-session');
@@ -101,6 +102,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/review-requests', reviewRequestRoutes);
 app.use('/api/otp', otpRoutes);
+app.use('/api/ai', aiRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB connection

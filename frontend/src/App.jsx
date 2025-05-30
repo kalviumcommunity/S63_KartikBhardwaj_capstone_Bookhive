@@ -18,6 +18,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ReadingMoodMatcher from './components/ReadingMoodMatcher'
 import BookDetails from './components/BookDetails'
 import WriteReview from './components/WriteReview'
+import BookChat from './components/BookChat'
+import AIAssistantWidget from './components/AIAssistantWidget'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
 import { BookmarkProvider } from './context/BookmarkContext'
@@ -100,6 +102,7 @@ function App() {
               } />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/authors" element={<AuthorsPage />} />
+              <Route path="/book-chat" element={<BookChat />} />
               <Route path="*" element={
                 <div className="error-page">
                   <h1 className="error-title">404 - Page Not Found</h1>
@@ -115,6 +118,7 @@ function App() {
             </Routes>
           </div>
             <FloatingBookAvatar />
+            <AIAssistantWidget />
             <Footer />
             <ToastContainer />
           </Router>
