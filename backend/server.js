@@ -10,6 +10,7 @@ const reviewRequestRoutes = require('./routes/reviewRequestRoutes');
 const otpRoutes = require('./routes/otp');
 const aiRoutes = require('./routes/aiRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 const seedBooks = require('./openServer'); 
 const path = require('path');
 const session = require('express-session');
@@ -108,6 +109,7 @@ app.use('/api/review-requests', reviewRequestRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB connection
@@ -128,6 +130,3 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Socket.IO server is ready for connections`);
 });
-
-
-

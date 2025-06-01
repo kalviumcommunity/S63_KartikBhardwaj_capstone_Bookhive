@@ -43,11 +43,10 @@ import FloatingBookAvatar from "./components/FloatingBookAvatar";
 import AvatarShowcase from "./components/AvatarShowcase";
 import AvatarDemo from "./components/AvatarDemo";
 import ContactSection from "./components/ContactSection";
+import ContactPage from "./components/ContactPage";
 import Footer from "./components/Footer";
 import RecommendBook from "./components/RecommendBook";
-import WebSocketStatus from "./components/WebSocketStatus";
-import WebSocketTester from "./components/WebSocketTester";
-import WebSocketDebug from "./components/WebSocketDebug";
+
 
 function App() {
   return (
@@ -138,8 +137,8 @@ function App() {
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/recommend-book" element={<RecommendBook />} />
                   <Route path="/authors" element={<AuthorsPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
                   <Route path="/book-chat" element={<BookChat />} />
-                  <Route path="/websocket-test" element={<WebSocketTester />} />
                   <Route
                     path="*"
                     element={
@@ -161,8 +160,6 @@ function App() {
               </div>
               <FloatingBookAvatar />
               <AIAssistantWidget />
-              <WebSocketStatus />
-              <WebSocketDebug />
               <Footer />
               <ToastContainer />
             </Router>

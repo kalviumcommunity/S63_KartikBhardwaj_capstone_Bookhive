@@ -1,0 +1,20 @@
+/* Contact Page Styles */
+.contact-page {
+  min-height: 100vh;
+  padding-top: 80px; /* Account for navbar */
+}
+
+.contact-page .contact-section {
+  padding: 4rem 0;
+}
+
+/* Ensure the contact section takes full viewport height minus navbar */
+@media (max-width: 768px) {
+  .contact-page {
+    padding-top: 70px;
+  }
+  
+  .contact-page .contact-section {
+    padding: 3rem 0;
+  }
+}
