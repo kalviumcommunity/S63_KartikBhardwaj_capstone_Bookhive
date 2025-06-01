@@ -4,8 +4,8 @@ const auth = require('../middleware/auth');
 const { getAllBooks, fetchBooksFromOpenLibrary, addBook, updateBook } = require('../controllers/bookControllers');
 const Review = require('../models/Review');
 const Book = require('../models/Book');
-const notificationService = require('../services/notificationService');
 const axios = require('axios');
+const notificationService = require('../services/notificationService');
 
 // GET: All books from MongoDB
 router.get('/', getAllBooks);
@@ -86,28 +86,31 @@ router.post('/works/:bookId/review', auth, async (req, res) => {
     // Populate user information
     await newReview.populate('userId', 'username');
 
-    // Get book title for notification (you might want to fetch this from your book data)
-    let bookTitle = 'Unknown Book';
+    // Send notification for review requests that might be fulfilled
     try {
-      // Try to get book title from Open Library or your database
-      const bookResponse = await axios.get(`https://openlibrary.org/works/${bookId}.json`);
-      bookTitle = bookResponse.data.title || bookTitle;
-    } catch (error) {
-      console.log('Could not fetch book title for notification');
-    }
+      // Get book details for notification
+      const bookResponse = await axios.get(https://openlibrary.org/works/${bookId}.json);
+      const bookTitle = bookResponse.data.title || 'Unknown Book';
+      
+      // Find any review requests for this book and notify the requesters
+      const ReviewRequest = require('../models/ReviewRequest');
+      const reviewRequests = await ReviewRequest.find({ 
+        bookId: bookId, 
+        fulfilled: false 
+      }).populate('requestedBy', 'username');
 
-    // Trigger notification for new review
-    try {
-      await notificationService.createNewReviewNotification({
-        bookId,
-        bookTitle,
-        reviewerId: userId,
-        reviewerName: newReview.userId.username,
-        rating,
-        reviewId: newReview._id
-      });
+      for (const request of reviewRequests) {
+        if (request.requestedBy._id.toString() !== userId.toString()) {
+          await notificationService.notifyReviewReceived(request.requestedBy._id, {
+            bookId: bookId,
+            bookTitle: bookTitle,
+            reviewId: newReview._id,
+            reviewerName: newReview.userId.username
+          });
+        }
+      }
     } catch (notificationError) {
-      console.error('Error sending review notification:', notificationError);
+      console.error('Error sending review notifications:', notificationError);
       // Don't fail the review creation if notification fails
     }
 
@@ -158,7 +161,7 @@ router.get('/reviews/all', async (req, res) => {
       validReviews.map(async (review) => {
         try {
           const bookKey = review.bookId.startsWith('/') ? review.bookId.slice(1) : review.bookId;
-          const bookResponse = await axios.get(`https://openlibrary.org/works/${bookKey}.json`);
+          const bookResponse = await axios.get(https://openlibrary.org/works/${bookKey}.json);
           
           return {
             ...review.toObject(),
@@ -195,12 +198,12 @@ router.get('/reviews/all', async (req, res) => {
 router.get('/work/:bookId', async (req, res) => {
   try {
     const { bookId } = req.params;
-    const response = await axios.get(`https://openlibrary.org/works/${bookId}.json`);
+    const response = await axios.get(https://openlibrary.org/works/${bookId}.json);
     
     // Get cover ID
     const coverId = response.data.covers?.[0];
     const coverUrl = coverId 
-      ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
+      ? https://covers.openlibrary.org/b/id/${coverId}-M.jpg
       : null;
 
     const bookDetails = {
@@ -234,7 +237,7 @@ router.get('/external-details', async (req, res) => {
     const searchQuery = encodeURIComponent(cleanTitle);
     
     // First try to get the book details from Open Library
-    const searchResponse = await axios.get(`https://openlibrary.org/search.json?title=${searchQuery}&limit=1`);
+    const searchResponse = await axios.get(https://openlibrary.org/search.json?title=${searchQuery}&limit=1);
     
     if (searchResponse.data.docs && searchResponse.data.docs.length > 0) {
       const bookData = searchResponse.data.docs[0];
@@ -245,7 +248,7 @@ router.get('/external-details', async (req, res) => {
       
       try {
         if (workId) {
-          const workResponse = await axios.get(`https://openlibrary.org${workId}.json`);
+          const workResponse = await axios.get(https://openlibrary.org${workId}.json);
           workData = workResponse.data;
         }
       } catch (workError) {
@@ -255,7 +258,7 @@ router.get('/external-details', async (req, res) => {
       // Get cover ID and URL
       const coverId = workData?.covers?.[0] || bookData.cover_i;
       const coverUrl = coverId 
-        ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
+        ? https://covers.openlibrary.org/b/id/${coverId}-L.jpg
         : null;
 
       // Get description from work data or first sentence
@@ -285,7 +288,7 @@ router.get('/external-details', async (req, res) => {
       const titleWords = cleanTitle.split(' ').filter(word => word.length > 3);
       const alternativeQuery = titleWords.join(' ');
       
-      const altSearchResponse = await axios.get(`https://openlibrary.org/search.json?q=${encodeURIComponent(alternativeQuery)}&limit=1`);
+      const altSearchResponse = await axios.get(https://openlibrary.org/search.json?q=${encodeURIComponent(alternativeQuery)}&limit=1);
       
       if (altSearchResponse.data.docs && altSearchResponse.data.docs.length > 0) {
         const bookData = altSearchResponse.data.docs[0];
@@ -294,7 +297,7 @@ router.get('/external-details', async (req, res) => {
           key: bookData.key,
           title: bookData.title,
           author: bookData.author_name?.[0] || 'Unknown Author',
-          coverUrl: bookData.cover_i ? `https://covers.openlibrary.org/b/id/${bookData.cover_i}-L.jpg` : null,
+          coverUrl: bookData.cover_i ? https://covers.openlibrary.org/b/id/${bookData.cover_i}-L.jpg : null,
           description: bookData.first_sentence?.[0] || 'No description available.',
           subjects: bookData.subject?.slice(0, 10) || [],
           firstPublishYear: bookData.first_publish_year,
