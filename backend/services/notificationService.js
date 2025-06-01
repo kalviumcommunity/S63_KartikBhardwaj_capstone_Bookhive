@@ -1,166 +1,144 @@
+const socketService = require('./socketService');
 const Notification = require('../models/Notification');
-const NotificationPreference = require('../models/NotificationPreference');
 const User = require('../models/User');
-const emailService = require('./emailService');
 
 class NotificationService {
   
-  // Create a new notification
-  async createNotification(userId, type, title, message, data = {}, actionUrl = null, priority = 'medium') {
+  // Create a new review notification
+  async createNewReviewNotification(reviewData) {
     try {
-      // Check user's notification preferences
-      const preferences = await this.getUserPreferences(userId);
+      const { bookId, bookTitle, reviewerId, reviewerName, rating } = reviewData;
       
-      if (!preferences.preferences[type]?.enabled) {
-        console.log(Notification type ${type} is disabled for user ${userId});
-        return null;
+      // Find all users who might be interested (you can customize this logic)
+      // For now, we'll notify users who have reviewed this book before
+      const existingReviews = await require('../models/Review').find({ 
+        bookId, 
+        userId: { $ne: reviewerId } 
+      }).populate('userId', '_id');
+      
+      const interestedUserIds = existingReviews.map(review => review.userId._id.toString());
+      
+      if (interestedUserIds.length > 0) {
+        const notification = {
+          sender: reviewerId,
+          type: 'new_review',
+          title: 'New Review Posted',
+          message: `${reviewerName} posted a ${rating}-star review for "${bookTitle}"`,
+          data: {
+            bookId,
+            bookTitle,
+            reviewId: reviewData.reviewId,
+            metadata: { rating }
+          }
+        };
+
+        // Send to all interested users
+        const promises = interestedUserIds.map(userId => 
+          socketService.sendNotificationToUser(userId, { ...notification, recipient: userId })
+        );
+        
+        await Promise.all(promises);
+        console.log(`New review notification sent to ${interestedUserIds.length} users`);
       }
-
-      // Check quiet hours
-      if (this.isQuietHours(preferences)) {
-        console.log(Quiet hours active for user ${userId}, delaying notification);
-        // In a real implementation, you'd queue this for later
-      }
-
-      const notification = new Notification({
-        userId,
-        type,
-        title,
-        message,
-        data,
-        actionUrl,
-        priority
-      });
-
-      await notification.save();
-
-      // Send email if enabled
-      if (preferences.preferences[type]?.email) {
-        await this.sendEmailNotification(userId, notification);
-      }
-
-      // In a real app, you'd also send push notifications here
-      // if (preferences.preferences[type]?.push) {
-      //   await this.sendPushNotification(userId, notification);
-      // }
-
-      return notification;
     } catch (error) {
-      console.error('Error creating notification:', error);
-      throw error;
+      console.error('Error creating new review notification:', error);
     }
   }
 
-  // Get user's notification preferences
-  async getUserPreferences(userId) {
+  // Create a new follower notification
+  async createNewFollowerNotification(followData) {
     try {
-      let preferences = await NotificationPreference.findOne({ userId });
+      const { followerId, followedId, followerName } = followData;
       
-      if (!preferences) {
-        // Create default preferences for new user
-        preferences = new NotificationPreference({ userId });
-        await preferences.save();
-      }
-      
-      return preferences;
-    } catch (error) {
-      console.error('Error getting user preferences:', error);
-      throw error;
-    }
-  }
-
-  // Update user's notification preferences
-  async updateUserPreferences(userId, newPreferences) {
-    try {
-      const preferences = await NotificationPreference.findOneAndUpdate(
-        { userId },
-        { preferences: newPreferences, updatedAt: new Date() },
-        { new: true, upsert: true }
-      );
-      
-      return preferences;
-    } catch (error) {
-      console.error('Error updating user preferences:', error);
-      throw error;
-    }
-  }
-
-  // Check if current time is within quiet hours
-  isQuietHours(preferences) {
-    if (!preferences.quietHours.enabled) return false;
-    
-    const now = new Date();
-    const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
-    
-    const startTime = preferences.quietHours.startTime;
-    const endTime = preferences.quietHours.endTime;
-    
-    // Handle overnight quiet hours (e.g., 22:00 to 08:00)
-    if (startTime > endTime) {
-      return currentTime >= startTime || currentTime <= endTime;
-    } else {
-      return currentTime >= startTime && currentTime <= endTime;
-    }
-  }
-
-  // Send email notification
-  async sendEmailNotification(userId, notification) {
-    try {
-      const user = await User.findById(userId);
-      if (!user || !user.email) return;
-
-      const emailContent = {
-        to: user.email,
-        subject: notification.title,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb;">${notification.title}</h2>
-            <p>${notification.message}</p>
-            ${notification.actionUrl ? `
-              <a href="${notification.actionUrl}" 
-                 style="background-color: #2563eb; color: white; padding: 10px 20px; 
-                        text-decoration: none; border-radius: 5px; display: inline-block;">
-                View Details
-              </a>
-            ` : ''}
-            <hr style="margin: 20px 0;">
-            <p style="color: #666; font-size: 12px;">
-              You received this notification from BookHive. 
-              <a href="${process.env.FRONTEND_URL}/notifications">Manage your notification preferences</a>
-            </p>
-          </div>
-        `
+      const notification = {
+        recipient: followedId,
+        sender: followerId,
+        type: 'new_follow',
+        title: 'New Follower',
+        message: `${followerName} started following you`,
+        data: {
+          metadata: { followerName }
+        }
       };
 
-      await emailService.sendEmail(emailContent);
+      await socketService.sendNotificationToUser(followedId, notification);
+      console.log(`New follower notification sent to user ${followedId}`);
     } catch (error) {
-      console.error('Error sending email notification:', error);
+      console.error('Error creating new follower notification:', error);
+    }
+  }
+
+  // Create a book recommendation notification
+  async createBookRecommendationNotification(recommendationData) {
+    try {
+      const { bookId, bookTitle, recommenderId, recommenderName, recipientId, message } = recommendationData;
+      
+      const notification = {
+        recipient: recipientId,
+        sender: recommenderId,
+        type: 'book_recommendation',
+        title: 'Book Recommendation',
+        message: `${recommenderName} recommended "${bookTitle}" to you`,
+        data: {
+          bookId,
+          bookTitle,
+          metadata: { customMessage: message }
+        }
+      };
+
+      await socketService.sendNotificationToUser(recipientId, notification);
+      console.log(`Book recommendation notification sent to user ${recipientId}`);
+    } catch (error) {
+      console.error('Error creating book recommendation notification:', error);
+    }
+  }
+
+  // Create a review comment notification
+  async createReviewCommentNotification(commentData) {
+    try {
+      const { reviewId, reviewOwnerId, commenterId, commenterName, bookTitle } = commentData;
+      
+      const notification = {
+        recipient: reviewOwnerId,
+        sender: commenterId,
+        type: 'review_comment',
+        title: 'New Comment on Your Review',
+        message: `${commenterName} commented on your review of "${bookTitle}"`,
+        data: {
+          reviewId,
+          bookTitle,
+          metadata: { commenterName }
+        }
+      };
+
+      await socketService.sendNotificationToUser(reviewOwnerId, notification);
+      console.log(`Review comment notification sent to user ${reviewOwnerId}`);
+    } catch (error) {
+      console.error('Error creating review comment notification:', error);
     }
   }
 
   // Get notifications for a user
-  async getUserNotifications(userId, page = 1, limit = 20, unreadOnly = false) {
+  async getUserNotifications(userId, page = 1, limit = 20) {
     try {
-      const query = { userId };
-      if (unreadOnly) {
-        query.isRead = false;
-      }
-
-      const notifications = await Notification.find(query)
+      const skip = (page - 1) * limit;
+      
+      const notifications = await Notification.find({ recipient: userId })
+        .populate('sender', 'username profilePicture')
         .sort({ createdAt: -1 })
-        .limit(limit * 1)
-        .skip((page - 1) * limit);
+        .skip(skip)
+        .limit(limit);
 
-      const total = await Notification.countDocuments(query);
-      const unreadCount = await Notification.countDocuments({ userId, isRead: false });
+      const totalCount = await Notification.countDocuments({ recipient: userId });
+      const unreadCount = await Notification.countDocuments({ recipient: userId, read: false });
 
       return {
         notifications,
         pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit)
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          totalCount,
+          hasMore: skip + notifications.length < totalCount
         },
         unreadCount
       };
@@ -170,159 +148,78 @@ class NotificationService {
     }
   }
 
-  // Mark notification as read
-  async markAsRead(notificationId, userId) {
+  // Mark notifications as read
+  async markNotificationsAsRead(userId, notificationIds) {
     try {
-      const notification = await Notification.findOneAndUpdate(
-        { _id: notificationId, userId },
-        { isRead: true },
-        { new: true }
+      const result = await Notification.updateMany(
+        { 
+          _id: { $in: notificationIds }, 
+          recipient: userId 
+        },
+        { read: true }
       );
-      
-      return notification;
+
+      return result;
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error('Error marking notifications as read:', error);
       throw error;
     }
   }
 
   // Mark all notifications as read for a user
-  async markAllAsRead(userId) {
+  async markAllNotificationsAsRead(userId) {
     try {
-      await Notification.updateMany(
-        { userId, isRead: false },
-        { isRead: true }
+      const result = await Notification.updateMany(
+        { recipient: userId, read: false },
+        { read: true }
       );
-      
-      return true;
+
+      return result;
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
       throw error;
     }
   }
 
-  // Delete notification
-  async deleteNotification(notificationId, userId) {
+  // Delete old notifications (cleanup job)
+  async deleteOldNotifications(daysOld = 30) {
     try {
-      await Notification.findOneAndDelete({ _id: notificationId, userId });
-      return true;
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+      const result = await Notification.deleteMany({
+        createdAt: { $lt: cutoffDate },
+        read: true
+      });
+
+      console.log(`Deleted ${result.deletedCount} old notifications`);
+      return result;
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      console.error('Error deleting old notifications:', error);
       throw error;
     }
   }
 
-  // Specific notification creators
-  async notifyNewBookRelease(userId, bookData) {
-    return this.createNotification(
-      userId,
-      'new_book_release',
-      'New Book Release!',
-      "${bookData.title}" by ${bookData.author} is now available!,
-      { bookId: bookData.id, author: bookData.author },
-      /book/${bookData.id},
-      'medium'
-    );
-  }
-
-  async notifyReadingGoalReminder(userId, goalData) {
-    return this.createNotification(
-      userId,
-      'reading_goal_reminder',
-      'Reading Goal Reminder',
-      You're ${goalData.booksRead}/${goalData.target} books into your ${goalData.period} goal. Keep it up!,
-      goalData,
-      '/profile',
-      'low'
-    );
-  }
-
-  async notifyFriendActivity(userId, friendData, activityType) {
-    const messages = {
-      'new_review': ${friendData.username} just reviewed "${friendData.bookTitle}",
-      'finished_book': ${friendData.username} finished reading "${friendData.bookTitle}",
-      'joined': ${friendData.username} joined BookHive!
-    };
-
-    return this.createNotification(
-      userId,
-      'friend_activity',
-      'Friend Activity',
-      messages[activityType] || ${friendData.username} has new activity,
-      { friendId: friendData.id, activityType },
-      /user/${friendData.id},
-      'low'
-    );
-  }
-
-  async notifyReviewRequest(userId, requestData) {
-    return this.createNotification(
-      userId,
-      'review_request',
-      'Review Request',
-      Someone requested a review for "${requestData.bookTitle}",
-      { bookId: requestData.bookId, requestId: requestData.requestId },
-      /book/${requestData.bookId},
-      'medium'
-    );
-  }
-
-  async notifyReviewReceived(userId, reviewData) {
-    return this.createNotification(
-      userId,
-      'review_received',
-      'New Review on Your Request',
-      ${reviewData.reviewerName} reviewed "${reviewData.bookTitle}" that you requested!,
-      { bookId: reviewData.bookId, reviewId: reviewData.reviewId },
-      /book/${reviewData.bookId},
-      'medium'
-    );
-  }
-
-  async notifyNewFollower(userId, followerData) {
-    return this.createNotification(
-      userId,
-      'follow_notification',
-      'New Follower',
-      ${followerData.username} started following you!,
-      { followerId: followerData.id },
-      /user/${followerData.id},
-      'low'
-    );
-  }
-
-  async notifyBookRecommendation(userId, bookData, reason) {
-    return this.createNotification(
-      userId,
-      'book_recommendation',
-      'Book Recommendation',
-      We think you'll love "${bookData.title}" ${reason},
-      { bookId: bookData.id, reason },
-      /book/${bookData.id},
-      'low'
-    );
-  }
-
-  async notifyReadingStreak(userId, streakData) {
-    return this.createNotification(
-      userId,
-      'reading_streak',
-      'Reading Streak!',
-      Congratulations! You've maintained a ${streakData.days}-day reading streak!,
-      streakData,
-      '/profile',
-      'medium'
-    );
-  }
-
-  // Clean up old notifications (run this as a cron job)
-  async cleanupOldNotifications() {
+  // Get notification statistics
+  async getNotificationStats(userId) {
     try {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      await Notification.deleteMany({ createdAt: { $lt: thirtyDaysAgo } });
-      console.log('Old notifications cleaned up');
+      const stats = await Notification.aggregate([
+        { $match: { recipient: userId } },
+        {
+          $group: {
+            _id: '$type',
+            count: { $sum: 1 },
+            unreadCount: {
+              $sum: { $cond: [{ $eq: ['$read', false] }, 1, 0] }
+            }
+          }
+        }
+      ]);
+
+      return stats;
     } catch (error) {
-      console.error('Error cleaning up old notifications:', error);
+      console.error('Error getting notification stats:', error);
+      throw error;
     }
   }
 }

@@ -5,7 +5,7 @@ import '../styles/Navbar.css';
 import '../styles/MobileSearch.css';
 import UserProfileMenu from './UserProfileMenu';
 import SearchSuggestions from './SearchSuggestions';
-import NotificationBell from './NotificationBell';
+import NotificationPanel from './NotificationPanel';
 import { motion } from 'framer-motion';
 
 const Navbar = () => {
@@ -27,6 +27,7 @@ const Navbar = () => {
     { path: '/', label: 'Home', icon: 'home' },
     { path: '/books', label: 'Books', icon: 'books' },
     { path: '/mood-matcher', label: 'Mood Matcher', icon: 'mood' },
+    { path: '/book-chat', label: 'Book Chat', icon: 'chat' },
     ...(isAuthenticated() ? [{ path: '/reviews', label: 'Reviews', icon: 'reviews' }] : []),
   ];
 
@@ -94,7 +95,7 @@ const Navbar = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(/search?query=${encodeURIComponent(searchQuery)});
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
       setSearchExpanded(false);
     }
   };
@@ -171,6 +172,12 @@ const Navbar = () => {
             <line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></line>
           </svg>
         );
+      case 'chat':
+        return (
+          <svg className="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        );
       default:
         return null;
     }
@@ -179,7 +186,7 @@ const Navbar = () => {
   return (
     <>
       {/* Main Navbar */}
-      <header className={navbar-wrapper ${scrolled ? 'scrolled' : ''}} ref={navbarRef}>
+      <header className={`navbar-wrapper ${scrolled ? 'scrolled' : ''}`} ref={navbarRef}>
         <div className="navbar-container">
           {/* Logo Section */}
           <div className="logo-container" ref={logoRef}>
@@ -201,7 +208,7 @@ const Navbar = () => {
               {navLinks.map((link, index) => (
                 <li 
                   key={link.path} 
-                  className={nav-item ${activeLink === link.path ? 'active' : ''}}
+                  className={`nav-item ${activeLink === link.path ? 'active' : ''}`}
                   onMouseEnter={() => handleLinkHover(index)}
                   onMouseLeave={handleLinkLeave}
                 >
@@ -220,7 +227,7 @@ const Navbar = () => {
               
               {/* Unique BookHive Search */}
               <li className="nav-item search-item">
-                <div className={bookhive-search ${searchExpanded ? 'expanded' : ''}}>
+                <div className={`bookhive-search ${searchExpanded ? 'expanded' : ''}`}>
                   <button 
                     className="bookshelf-search-toggle" 
                     onClick={toggleSearch}
@@ -300,8 +307,8 @@ const Navbar = () => {
           <div className="navbar-actions">
             {/* User Profile or Auth Buttons */}
             {isAuthenticated() ? (
-              <div className="profile-container">
-                <NotificationBell />
+              <div className="navbar-user-section">
+                <NotificationPanel />
                 <UserProfileMenu />
               </div>
             ) : (
@@ -353,7 +360,7 @@ const Navbar = () => {
 
             {/* Mobile Menu Toggle */}
             <button 
-              className={menu-toggle ${menuOpen ? 'active' : ''}}
+              className={`menu-toggle ${menuOpen ? 'active' : ''}`}
               onClick={toggleMenu}
               aria-label="Toggle menu"
             >
@@ -368,7 +375,7 @@ const Navbar = () => {
       </header>
 
       {/* Mobile Navigation Menu */}
-      <div className={mobile-nav ${menuOpen ? 'active' : ''}}>
+      <div className={`mobile-nav ${menuOpen ? 'active' : ''}`}>
         <div className="mobile-nav-content">
           <div className="mobile-nav-header">
             <img src="/Logo.png" alt="Book Hive Logo" className="mobile-logo" />
@@ -457,7 +464,7 @@ const Navbar = () => {
           <nav className="mobile-nav-menu">
             <ul className="mobile-nav-list">
               {navLinks.map((link) => (
-                <li key={link.path} className={mobile-nav-item ${activeLink === link.path ? 'active' : ''}}>
+                <li key={link.path} className={`mobile-nav-item ${activeLink === link.path ? 'active' : ''}`}>
                   <Link 
                     to={link.path} 
                     className="mobile-nav-link"
@@ -504,7 +511,7 @@ const Navbar = () => {
       
       {/* Overlay for mobile menu */}
       <div 
-        className={overlay ${menuOpen ? 'active' : ''}} 
+        className={`overlay ${menuOpen ? 'active' : ''}`} 
         onClick={() => {
           setMenuOpen(false);
         }}
@@ -513,4 +520,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navbar; 

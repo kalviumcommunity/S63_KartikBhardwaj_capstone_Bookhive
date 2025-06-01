@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const ReviewRequest = require('../models/ReviewRequest');
-const notificationService = require('../services/notificationService');
-const User = require('../models/User');
 
 // GET: Get all review requests
 router.get('/', async (req, res) => {
@@ -54,22 +52,6 @@ router.post('/', auth, async (req, res) => {
     });
     
     await newRequest.save();
-    
-    // Send notifications to all users about the new review request
-    try {
-      const allUsers = await User.find({ _id: { $ne: req.user._id } }); // Exclude the requester
-      
-      for (const user of allUsers) {
-        await notificationService.notifyReviewRequest(user._id, {
-          bookId,
-          bookTitle,
-          requestId: newRequest._id
-        });
-      }
-    } catch (notificationError) {
-      console.error('Error sending review request notifications:', notificationError);
-      // Don't fail the request creation if notification fails
-    }
     
     res.status(201).json(newRequest);
   } catch (error) {
