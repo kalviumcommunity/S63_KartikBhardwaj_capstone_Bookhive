@@ -4,6 +4,7 @@ const auth = require('../middleware/auth');
 const { getAllBooks, fetchBooksFromOpenLibrary, addBook, updateBook } = require('../controllers/bookControllers');
 const Review = require('../models/Review');
 const Book = require('../models/Book');
+const notificationService = require('../services/notificationService');
 const axios = require('axios');
 
 // GET: All books from MongoDB
@@ -84,6 +85,31 @@ router.post('/works/:bookId/review', auth, async (req, res) => {
 
     // Populate user information
     await newReview.populate('userId', 'username');
+
+    // Get book title for notification (you might want to fetch this from your book data)
+    let bookTitle = 'Unknown Book';
+    try {
+      // Try to get book title from Open Library or your database
+      const bookResponse = await axios.get(`https://openlibrary.org/works/${bookId}.json`);
+      bookTitle = bookResponse.data.title || bookTitle;
+    } catch (error) {
+      console.log('Could not fetch book title for notification');
+    }
+
+    // Trigger notification for new review
+    try {
+      await notificationService.createNewReviewNotification({
+        bookId,
+        bookTitle,
+        reviewerId: userId,
+        reviewerName: newReview.userId.username,
+        rating,
+        reviewId: newReview._id
+      });
+    } catch (notificationError) {
+      console.error('Error sending review notification:', notificationError);
+      // Don't fail the review creation if notification fails
+    }
 
     res.status(201).json({
       _id: newReview._id,

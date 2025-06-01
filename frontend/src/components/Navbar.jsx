@@ -5,6 +5,7 @@ import '../styles/Navbar.css';
 import '../styles/MobileSearch.css';
 import UserProfileMenu from './UserProfileMenu';
 import SearchSuggestions from './SearchSuggestions';
+import NotificationPanel from './NotificationPanel';
 import { motion } from 'framer-motion';
 
 const Navbar = () => {
@@ -306,7 +307,8 @@ const Navbar = () => {
           <div className="navbar-actions">
             {/* User Profile or Auth Buttons */}
             {isAuthenticated() ? (
-              <div className="profile-container">
+              <div className="navbar-user-section">
+                <NotificationPanel />
                 <UserProfileMenu />
               </div>
             ) : (
