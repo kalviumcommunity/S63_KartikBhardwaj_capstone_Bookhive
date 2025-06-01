@@ -1,19 +1,24 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  recipient: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  sender: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
   type: {
     type: String,
-    enum: ['new_review', 'new_follow', 'review_comment', 'book_recommendation', 'review_like'],
+    enum: [
+      'new_book_release',
+      'reading_goal_reminder',
+      'friend_activity',
+      'book_club_discussion',
+      'review_request',
+      'review_received',
+      'follow_notification',
+      'book_recommendation',
+      'reading_streak'
+    ],
     required: true
   },
   title: {
@@ -25,16 +30,25 @@ const notificationSchema = new mongoose.Schema({
     required: true
   },
   data: {
-    bookId: String,
-    reviewId: String,
-    authorName: String,
-    bookTitle: String,
-    // Additional data specific to notification type
-    metadata: mongoose.Schema.Types.Mixed
+    type: mongoose.Schema.Types.Mixed, // Flexible data for different notification types
+    default: {}
   },
-  read: {
+  isRead: {
     type: Boolean,
     default: false
+  },
+  priority: {
+    type: String,
+    enum: ['low', 'medium', 'high'],
+    default: 'medium'
+  },
+  actionUrl: {
+    type: String, // URL to redirect when notification is clicked
+    default: null
+  },
+  expiresAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
   },
   createdAt: {
     type: Date,
@@ -42,8 +56,9 @@ const notificationSchema = new mongoose.Schema({
   }
 });
 
-// Index for efficient querying
-notificationSchema.index({ recipient: 1, createdAt: -1 });
-notificationSchema.index({ recipient: 1, read: 1 });
+// Index for efficient queries
+notificationSchema.index({ userId: 1, createdAt: -1 });
+notificationSchema.index({ userId: 1, isRead: 1 });
+notificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('Notification', notificationSchema);
