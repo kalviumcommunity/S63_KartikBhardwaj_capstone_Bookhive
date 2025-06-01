@@ -38,9 +38,14 @@ export const SocketProvider = ({ children }) => {
 
   const initializeSocket = () => {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) {
+      console.log('❌ No token found - user not authenticated');
+      return;
+    }
 
-    console.log('Initializing Socket.IO connection...');
+    console.log('🔄 Initializing Socket.IO connection...');
+    console.log('🔗 Connecting to:', API_URL);
+    console.log('👤 User authenticated:', !!user);
     
     const newSocket = io(API_URL, {
       auth: {

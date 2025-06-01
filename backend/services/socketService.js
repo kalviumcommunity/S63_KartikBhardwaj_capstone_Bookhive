@@ -27,25 +27,36 @@ class SocketService {
     // Authentication middleware for Socket.IO
     this.io.use(async (socket, next) => {
       try {
+        console.log('🔐 Socket authentication attempt');
+        console.log('📋 Handshake auth:', socket.handshake.auth);
+        console.log('📋 Headers:', socket.handshake.headers);
+        
         const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace('Bearer ', '');
         
         if (!token) {
+          console.log('❌ No token provided in socket handshake');
           return next(new Error('Authentication error: No token provided'));
         }
 
+        console.log('🔑 Token found, verifying...');
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'bookhive_secret_key_2024');
+        console.log('✅ Token decoded successfully:', decoded.userId);
+        
         const user = await User.findById(decoded.userId).select('-password');
 
         if (!user) {
+          console.log('❌ User not found in database');
           return next(new Error('Authentication error: User not found'));
         }
 
+        console.log('✅ User authenticated:', user.username);
         socket.userId = user._id.toString();
         socket.user = user;
         next();
       } catch (error) {
-        console.error('Socket authentication error:', error);
-        next(new Error('Authentication error: Invalid token'));
+        console.error('❌ Socket authentication error:', error.message);
+        next(new Error(`Authentication error: ${error.message}`));
       }
     });
 
