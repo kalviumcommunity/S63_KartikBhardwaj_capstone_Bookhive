@@ -29,6 +29,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BookmarkProvider } from "./context/BookmarkContext";
 import { LoadingProvider, useLoading } from "./context/LoadingContext";
+import { SocketProvider } from "./context/SocketContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Reviews from "./components/Reviews";
@@ -44,6 +45,9 @@ import AvatarDemo from "./components/AvatarDemo";
 import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
 import RecommendBook from "./components/RecommendBook";
+import WebSocketStatus from "./components/WebSocketStatus";
+import WebSocketTester from "./components/WebSocketTester";
+import WebSocketDebug from "./components/WebSocketDebug";
 
 function App() {
   return (
@@ -52,8 +56,9 @@ function App() {
       <ThemeProvider>
         <BookmarkProvider>
           <LoadingProvider>
-            <LoadingInterceptorInitializer />
-            <Router>
+            <SocketProvider>
+              <LoadingInterceptorInitializer />
+              <Router>
               <div className="app-container">
                 <Navbar />
                 <Routes>
@@ -134,6 +139,7 @@ function App() {
                   <Route path="/recommend-book" element={<RecommendBook />} />
                   <Route path="/authors" element={<AuthorsPage />} />
                   <Route path="/book-chat" element={<BookChat />} />
+                  <Route path="/websocket-test" element={<WebSocketTester />} />
                   <Route
                     path="*"
                     element={
@@ -155,9 +161,12 @@ function App() {
               </div>
               <FloatingBookAvatar />
               <AIAssistantWidget />
+              <WebSocketStatus />
+              <WebSocketDebug />
               <Footer />
               <ToastContainer />
             </Router>
+            </SocketProvider>
           </LoadingProvider>
         </BookmarkProvider>
       </ThemeProvider>
