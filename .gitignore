@@ -1,5 +1,9 @@
-nextjs-frontend/node_modules
+# .gitignore for Node/React/Next projects
+
 node_modules/
 .env
+.next/
+out/
 dist/
 .DS_Store
+*.log
