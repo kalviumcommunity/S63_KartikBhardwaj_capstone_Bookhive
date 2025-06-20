@@ -4,8 +4,8 @@ import axios from 'axios';
 import { handleImageError } from '../utils/imageUtils';
 import '../styles/AuthorsPage.css';
 
-// Import the fallback authors from TopAuthors component
-import { fallbackAuthors, popularAuthorIds } from './TopAuthors';
+// Import the fallback authors from utility file
+import { fallbackAuthors, popularAuthorIds } from '../utils/authorData';
 
 // Additional authors data to provide more options when filtering
 const additionalAuthors = [

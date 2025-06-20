@@ -1,8 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { searchBooks } from '../services/BookService';
 import '../styles/SearchResults.css';
 import Navbar from './Navbar';
+
+// Local implementation of searchBooks
+const searchBooks = async (query) => {
+  try {
+    const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10`);
+    const data = await response.json();
+    return data.docs.map(book => ({
+      id: book.key,
+      title: book.title,
+      author: book.author_name ? book.author_name[0] : 'Unknown Author',
+      coverUrl: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : null,
+      publishYear: book.first_publish_year || 'Unknown',
+    }));
+  } catch (error) {
+    console.error('Error searching books:', error);
+    return [];
+  }
+};
 
 const SearchResults = () => {
   const [books, setBooks] = useState([]);

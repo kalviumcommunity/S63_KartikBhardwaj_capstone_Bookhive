@@ -6,15 +6,14 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import "./styles/App.css";
-import "./styles/BookOfTheMonth.css";
 import { initializeLoadingInterceptors } from "./utils/axiosConfig"; // Import axios configuration
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import FeaturedBooks from "./components/FeaturedBooks";
-import BookOfTheMonth from "./components/BookOfTheMonth";
-import TopAuthors from "./components/TopAuthors";
 
 import AuthorDetails from "./components/AuthorDetails";
+import AuthorDetailPage from "./components/AuthorDetailPage";
+import TopAuthors from "./components/TopAuthors";
+import EnhancedAuthorsPage from "./components/EnhancedAuthorsPage";
 import Signup from "./components/SignUp";
 import Login from "./components/Login";
 import Books from "./components/Books";
@@ -46,6 +45,13 @@ import ContactSection from "./components/ContactSection";
 import ContactPage from "./components/ContactPage";
 import Footer from "./components/Footer";
 import RecommendBook from "./components/RecommendBook";
+import BookCarousel from "./components/BookCarousel";
+import FeaturedBooksPage from "./components/FeaturedBooksPage";
+import FeaturedBooks from "./components/FeaturedBooks";
+import ExploreCategories from "./components/ExploreCategories";
+import CategoryBooks from "./components/CategoryBooks";
+import BookOfTheMonth from "./components/BookOfTheMonth";
+import BookOfTheMonthDetail from "./components/BookOfTheMonthDetail";
 
 
 function App() {
@@ -68,6 +74,9 @@ function App() {
                         <Hero />
                         <ErrorBoundary>
                           <FeaturedBooks />
+                        </ErrorBoundary>
+                        <ErrorBoundary>
+                          <ExploreCategories />
                         </ErrorBoundary>
                         <ErrorBoundary>
                           <BookOfTheMonth />
@@ -121,10 +130,18 @@ function App() {
                     path="/mood-matcher"
                     element={<ReadingMoodMatcher />}
                   />
-                  <Route path="/book/:workId" element={<BookDetails />} />
+                  <Route path="/book/:workId" element={
+                    <ErrorBoundary>
+                      <BookDetails />
+                    </ErrorBoundary>
+                  } />
                   <Route
-                    path="/author/:authorName"
+                    path="/author-old/:authorName"
                     element={<AuthorDetails />}
+                  />
+                  <Route
+                    path="/author/:authorId"
+                    element={<AuthorDetailPage />}
                   />
                   <Route
                     path="/write-review/:bookId"
@@ -136,9 +153,14 @@ function App() {
                   />
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/recommend-book" element={<RecommendBook />} />
-                  <Route path="/authors" element={<AuthorsPage />} />
+                  <Route path="/authors" element={<EnhancedAuthorsPage />} />
+                  <Route path="/authors-old" element={<AuthorsPage />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/book-chat" element={<BookChat />} />
+                  <Route path="/carousel" element={<BookCarousel />} />
+                  <Route path="/books/featured" element={<FeaturedBooksPage />} />
+                  <Route path="/category/:category" element={<CategoryBooks />} />
+                  <Route path="/book-of-the-month/:bookId" element={<BookOfTheMonthDetail />} />
                   <Route
                     path="*"
                     element={
