@@ -131,9 +131,13 @@ Week 4: Testing & Launch
 
 🛠️ How it Works:
 
+
 1. Upon signup, an OTP is generated server-side and logged to the console
 2. The user is prompted to enter the OTP for verification
 3. Once confirmed, the account is flagged as email-verified
+
+
+
 
 
 
