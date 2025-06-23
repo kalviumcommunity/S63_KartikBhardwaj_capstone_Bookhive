@@ -123,10 +123,6 @@ Week 4: Testing & Launch
 
 
 
-🌐 Live Links
-
-1. 🔗 Frontend: BookHive on Netlify
-2. 🔗 Backend API: BookHive API on Render
 
 
 
@@ -152,6 +148,12 @@ To upgrade for production, integrate with email providers like:
 1. SendGrid
 2. Mailgun
 3. AWS SES
+
+
+🌐 Live Links
+
+1. 🔗 **Frontend**: [BookHive Live App](https://bookhiv.netlify.app/)
+2. 🔗 **Backend API**: [BookHive API Server](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)
 
 🏁 Conclusion
 BookHive is more than a project — it’s a real-world scalable application designed with both community experience and developer best practices in mind. From clean architecture and modular design to thoughtful UI/UX and secure authentication, BookHive is ready to be showcased as a serious full-stack MERN application.
