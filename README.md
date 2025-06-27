@@ -66,6 +66,7 @@ Deployment	                 Vercel (Frontend), Render (Backend), MongoDB Atlas (
 
 
 
+
 🧭 UI Flow
 
 1. 🏠 Landing Page: Hero section, search bar, featured books, and call-to-action buttons
@@ -105,6 +106,9 @@ Week 3: UI/UX & Admin Tools
 ✅ API performance improvements via caching
 ✅ UI polish and optional animations (Framer Motion)
 ✅ Internal feature demo
+
+
+
 
 Week 4: Testing & Launch
 
@@ -152,6 +156,8 @@ To upgrade for production, integrate with email providers like:
 1. SendGrid
 2. Mailgun
 3. AWS SES
+
+
 
 🏁 Conclusion
 BookHive is more than a project — it’s a real-world scalable application designed with both community experience and developer best practices in mind. From clean architecture and modular design to thoughtful UI/UX and secure authentication, BookHive is ready to be showcased as a serious full-stack MERN application.
