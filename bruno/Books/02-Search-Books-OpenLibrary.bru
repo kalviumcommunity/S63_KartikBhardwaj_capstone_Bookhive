@@ -1,0 +1,47 @@
+meta {
+  name: Search Books (OpenLibrary API)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/books/search
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+params:query {
+  q: harry potter
+  limit: 20
+}
+
+headers {
+  Accept: application/json
+}
+
+assert {
+  res.status: eq 200
+  res.body.docs: isArray
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✅ Search completed successfully");
+    console.log("📚 Results found:", res.body.docs ? res.body.docs.length : 0);
+    
+    // Save first book's work ID for other tests
+    if (res.body.docs && res.body.docs.length > 0) {
+      const firstBook = res.body.docs[0];
+      if (firstBook.key) {
+        const workId = firstBook.key.replace('/works/', '');
+        bru.setVar("bookId", workId);
+        console.log("🔖 Book ID saved:", workId);
+      }
+      console.log("📖 First book:", firstBook.title);
+    }
+  }
+}

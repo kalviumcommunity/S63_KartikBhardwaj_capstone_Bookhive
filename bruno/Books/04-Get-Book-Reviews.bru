@@ -1,0 +1,52 @@
+meta {
+  name: Get Book Reviews & Rating
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/books/works/{{bookId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  # Get Book Reviews
+  
+  This endpoint fetches all reviews for a specific book along with average rating.
+  
+  ## Requirements:
+  - Valid JWT token
+  - Book ID (from OpenLibrary or MongoDB)
+  
+  ## Response:
+  - Array of reviews with user details
+  - Average rating (0-5 stars)
+  - Review count
+}
+
+assert {
+  res.status: eq 200
+  res.body.reviews: isArray
+  res.body.averageRating: isNumber
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✅ Book reviews fetched successfully");
+    console.log("📝 Total reviews:", res.body.reviews.length);
+    console.log("⭐ Average rating:", res.body.averageRating);
+    
+    if (res.body.reviews.length > 0) {
+      console.log("👤 First reviewer:", res.body.reviews[0].userName);
+    }
+  }
+}

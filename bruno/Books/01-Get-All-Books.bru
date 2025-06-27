@@ -1,0 +1,41 @@
+meta {
+  name: Get All Books
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/books
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+params:query {
+  page: 1
+  limit: 10
+  genre: fiction
+}
+
+headers {
+  Accept: application/json
+}
+
+assert {
+  res.status: eq 200
+  res.body.books: isArray
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✅ Books fetched successfully");
+    console.log("📚 Total books:", res.body.books ? res.body.books.length : 0);
+    if (res.body.pagination) {
+      console.log("📄 Page:", res.body.pagination.page);
+      console.log("📄 Total pages:", res.body.pagination.totalPages);
+    }
+  }
+}

@@ -1,0 +1,35 @@
+meta {
+  name: Get User Profile (Protected)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/auth/profile
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+assert {
+  res.status: eq 200
+  res.body.username: isString
+  res.body.email: isString
+  res.body.password: isUndefined
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✅ Profile fetched successfully");
+    console.log("👤 Username:", res.body.username);
+    console.log("📧 Email:", res.body.email);
+    console.log("🔒 Email Verified:", res.body.isEmailVerified);
+  }
+}

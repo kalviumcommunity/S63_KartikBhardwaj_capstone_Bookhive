@@ -1,0 +1,50 @@
+meta {
+  name: Verify Email OTP
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/auth/verify-email
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "userId": "{{userId}}",
+    "otpId": "replace-with-actual-otp-id-from-console",
+    "otp": "123456"
+  }
+}
+
+docs {
+  # Email OTP Verification
+  
+  ## How to use:
+  1. First run signup or login
+  2. Check your backend console for OTP
+  3. Replace `otpId` and `otp` values above
+  4. Run this request
+  
+  ## Expected Response:
+  - Status: 200
+  - Message: "Email verified successfully"
+  - User object with isEmailVerified: true
+}
+
+assert {
+  res.status: eq 200
+  res.body.message: contains "verified"
+  res.body.user.isEmailVerified: eq true
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✅ Email verified successfully");
+  }
+}

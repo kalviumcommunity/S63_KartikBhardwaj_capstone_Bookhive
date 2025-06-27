@@ -1,0 +1,38 @@
+meta {
+  name: Resend OTP
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/auth/resend-otp
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{testEmail}}",
+    "userId": "{{userId}}"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.message: contains "sent"
+  res.body.otpId: isString
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✅ OTP resent successfully");
+    console.log("🆔 OTP ID:", res.body.otpId);
+    if (res.body.previewUrl) {
+      console.log("📧 Preview URL:", res.body.previewUrl);
+    }
+  }
+}

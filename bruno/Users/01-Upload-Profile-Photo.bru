@@ -1,0 +1,51 @@
+meta {
+  name: Upload Profile Photo
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/users/upload-photo
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Accept: application/json
+}
+
+body:multipart-form {
+  photo: @file(/path/to/sample-photo.jpg)
+}
+
+docs {
+  # Upload Profile Photo
+  
+  ## How to use:
+  1. Replace the file path with actual image file
+  2. Supported formats: jpg, jpeg, png
+  3. Max file size: 5MB
+  4. Requires authentication
+  
+  ## Example file paths:
+  - Windows: C:\Users\YourName\Pictures\photo.jpg
+  - Mac: /Users/YourName/Pictures/photo.jpg
+  - Linux: /home/YourName/Pictures/photo.jpg
+}
+
+assert {
+  res.status: eq 200
+  res.body.message: contains "uploaded"
+  res.body.user.profilePicture: isString
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("✅ Profile photo uploaded successfully");
+    console.log("🖼️  Photo URL:", res.body.user.profilePicture);
+  }
+}
