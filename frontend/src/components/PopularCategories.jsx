@@ -54,7 +54,7 @@ const categoryBooks = {
     {
       title: 'And Then There Were None',
       author: 'Agatha Christie',
-      coverUrl: 'https://m.media-amazon.com/images/I/819tZUov6FL._AC_UF1000,1000_QL80_.jpg',
+      coverUrl: 'https://covers.openlibrary.org/b/isbn/9780062073488-L.jpg',
       year: '1939'
     },
     {

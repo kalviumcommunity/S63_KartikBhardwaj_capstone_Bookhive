@@ -135,7 +135,7 @@ export const sampleWorks = {
       id: 'OL103123W',
       key: '/works/OL103123W',
       title: 'And Then There Were None',
-      coverUrl: 'https://m.media-amazon.com/images/I/819tZUov6FL._AC_UF1000,1000_QL80_.jpg',
+      coverUrl: 'https://covers.openlibrary.org/b/isbn/9780062073488-L.jpg',
       description: 'Ten strangers, apparently with little in common, are lured to an island mansion off the coast of Devon by the mysterious U.N.Owen. Over dinner, a record begins to play, and the voice of an unseen host accuses each person of hiding a guilty secret. That evening, former reckless driver Tony Marston is found murdered by a deadly dose of cyanide.',
       firstPublishYear: '1939',
       subjects: ['Mystery', 'Detective', 'Fiction', 'Psychological Thriller']

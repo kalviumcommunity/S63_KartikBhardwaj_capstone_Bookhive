@@ -6,6 +6,13 @@ import '../styles/Books.css';
 
 const CATEGORY_MAP = {
   'fiction': 'fiction',
+  'romance': 'romance',
+  'mystery': 'mystery',
+  'science_fiction': 'science_fiction',
+  'self_help': 'self_help',
+  'biography': 'biography',
+  'history': 'history',
+  'fantasy': 'fantasy',
   'science': 'science',
   'non-fiction': 'nonfiction',
   'nonfiction': 'nonfiction',

@@ -3,8 +3,6 @@ import Navbar from './Navbar';
 import HeroSection from './HeroSection';
 import ExploreCategories from './ExploreCategories';
 import FeaturedBooks from './FeaturedBooks';
-import TopAuthors from './TopAuthors';
-import BookOfTheMonth from './BookOfTheMonth';
 import PopularCategories from './PopularCategories';
 import RecentReviews from './RecentReviews';
 import ReadingStats from './ReadingStats';
@@ -19,9 +17,8 @@ const Home = () => {
       <HeroSection />
       <div className="main-content">
         <ExploreCategories />
-        <BookOfTheMonth />
+        <FeaturedBooks />
         <PopularCategories />
-        <TopAuthors />
         <RecentReviews />
         <ReadingStats />
         <CommunityCTA />

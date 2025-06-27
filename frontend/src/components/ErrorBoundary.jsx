@@ -1,16 +1,11 @@
-import React, { Component } from 'react';
-import '../styles/ErrorBoundary.css';
+import React from 'react';
+import { FaArrowLeft, FaExclamationTriangle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-class ErrorBoundary extends Component {
+class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      hasError: false, 
-      error: null, 
-      errorInfo: null,
-      retryCount: 0,
-      isRetrying: false
-    };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -19,115 +14,126 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log the error to console
-    console.error('Error caught by ErrorBoundary:', error, errorInfo);
-    
-    // Check if it's a network-related error
-    const isNetworkError = 
-      error.message?.includes('network') || 
-      error.message?.includes('CORS') ||
-      error.message?.includes('JSONP') ||
-      error.message?.includes('fetch') ||
-      error.message?.includes('timeout');
-    
-    this.setState({ 
-      error, 
-      errorInfo,
-      isNetworkError
+    // Log the error to console for debugging
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    this.setState({
+      error: error,
+      errorInfo: errorInfo
     });
-    
-    // Automatically retry once for network errors after a delay
-    if (isNetworkError && this.state.retryCount === 0) {
-      this.setState({ isRetrying: true });
-      
-      setTimeout(() => {
-        this.handleRetry();
-      }, 3000);
-    }
-  }
-  
-  handleRetry = () => {
-    this.setState(prevState => ({
-      hasError: false,
-      error: null,
-      errorInfo: null,
-      retryCount: prevState.retryCount + 1,
-      isRetrying: false
-    }));
-  }
-  
-  handleClearCache = () => {
-    // Clear API caches
-    try {
-      localStorage.removeItem('apiCache');
-      localStorage.removeItem('jsonpCache');
-      
-      // Clear any items that start with 'api_' or 'jsonp_'
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('api_') || key.startsWith('jsonp_')) {
-          localStorage.removeItem(key);
-        }
-      });
-      
-      alert('Cache cleared successfully. The page will now reload.');
-      window.location.reload();
-    } catch (e) {
-      console.error('Error clearing cache:', e);
-      alert('Failed to clear cache. Please try reloading the page manually.');
-    }
   }
 
   render() {
     if (this.state.hasError) {
-      // Get error message
-      const errorMessage = this.state.error?.message || 'Unknown error';
-      const isNetworkError = this.state.isNetworkError;
-      
-      // Render fallback UI
       return (
-        <div className="error-boundary">
-          <div className="error-content">
-            <div className="error-icon">
-              {isNetworkError ? '🌐' : '⚠️'}
-            </div>
+        <div className="error-boundary-container" style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2rem'
+        }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: '20px',
+            padding: '3rem',
+            textAlign: 'center',
+            maxWidth: '500px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+          }}>
+            <FaExclamationTriangle style={{
+              fontSize: '4rem',
+              color: '#ff6b6b',
+              marginBottom: '1.5rem'
+            }} />
             
-            <h2>Something went wrong</h2>
+            <h2 style={{
+              fontSize: '2rem',
+              fontWeight: '700',
+              color: '#333',
+              marginBottom: '1rem'
+            }}>
+              Something went wrong
+            </h2>
             
-            <p className="error-message">
-              {isNetworkError 
-                ? "We're having trouble connecting to our book service. This might be due to network issues."
-                : "We're sorry, but there was an error loading this component."}
+            <p style={{
+              fontSize: '1.1rem',
+              color: '#666',
+              marginBottom: '2rem',
+              lineHeight: '1.6'
+            }}>
+              We encountered an error while loading this page. Please try refreshing the page or go back to continue browsing.
             </p>
             
-            {this.state.isRetrying ? (
-              <div className="retry-progress">
-                <div className="retry-spinner"></div>
-                <p>Retrying automatically...</p>
-              </div>
-            ) : (
-              <div className="error-actions">
-                <button 
-                  onClick={this.handleRetry}
-                  className="retry-button"
-                >
-                  Try Again
-                </button>
-                
-                {isNetworkError && (
-                  <button 
-                    onClick={this.handleClearCache}
-                    className="clear-cache-button"
-                  >
-                    Clear Cache & Reload
-                  </button>
-                )}
-              </div>
-            )}
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
+                onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+              >
+                Refresh Page
+              </button>
+              
+              <button
+                onClick={() => window.history.back()}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'transparent',
+                  color: '#667eea',
+                  border: '2px solid #667eea',
+                  borderRadius: '10px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#667eea';
+                  e.target.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#667eea';
+                }}
+              >
+                <FaArrowLeft /> Go Back
+              </button>
+            </div>
             
-            {this.props.showDetails && (
-              <details className="error-details">
-                <summary>Technical Details</summary>
-                <p>{errorMessage}</p>
+            {process.env.NODE_ENV === 'development' && this.state.error && (
+              <details style={{
+                marginTop: '2rem',
+                textAlign: 'left',
+                background: '#f8f9fa',
+                padding: '1rem',
+                borderRadius: '8px',
+                fontSize: '0.9rem'
+              }}>
+                <summary style={{ cursor: 'pointer', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  Error Details (Development)
+                </summary>
+                <pre style={{ 
+                  whiteSpace: 'pre-wrap', 
+                  wordBreak: 'break-word',
+                  color: '#dc3545'
+                }}>
+                  {this.state.error && this.state.error.toString()}
+                  <br />
+                  {this.state.errorInfo.componentStack}
+                </pre>
               </details>
             )}
           </div>
@@ -135,7 +141,6 @@ class ErrorBoundary extends Component {
       );
     }
 
-    // If no error, render children normally
     return this.props.children;
   }
 }

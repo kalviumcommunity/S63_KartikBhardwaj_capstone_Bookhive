@@ -1,406 +1,798 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { getFallbackWorks } from '../utils/fallbackData';
-import { generateAmazonLink } from '../utils/affiliateLinks';
-import LoadingAvatar from './LoadingAvatar';
+import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  FaArrowLeft,
+  FaStar,
+  FaRegStar,
+  FaUser,
+  FaCalendarAlt,
+  FaBook,
+  FaSpinner,
+  FaHeart,
+  FaRegHeart,
+  FaBookmark,
+  FaRegBookmark,
+  FaEdit,
+  FaTrash
+} from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
+import { useBookmarks } from '../context/BookmarkContext';
+import { fetchBookDetails, getAuthorDetails, FALLBACK_BOOKS } from '../services/BookService';
+import axios from 'axios';
 import '../styles/BookDetails.css';
 
 const BookDetails = () => {
   const { workId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { user } = useAuth() || {};
+  const { addBookmark, removeBookmark, isBookmarked } = useBookmarks() || {};
+  
+  console.log('BookDetails component rendered with workId:', workId);
+  
+  // State management
   const [book, setBook] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [author, setAuthor] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [relatedBooks, setRelatedBooks] = useState([]);
-  const [activeTab, setActiveTab] = useState('details');
+  const [loading, setLoading] = useState(true);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [error, setError] = useState(null);
+  const [averageRating, setAverageRating] = useState(0);
+  const [userRating, setUserRating] = useState(0);
+  const [userReview, setUserReview] = useState('');
+  const [isLiked, setIsLiked] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
 
-  // Check if book data was passed via location state
+  // Helper function to clean workId
+  const getCleanWorkId = (id) => {
+    if (!id) return '';
+    return id.startsWith('/works/') ? id.replace('/works/', '') : id;
+  };
+
+  // Load book details and reviews
   useEffect(() => {
-    const fetchBookDetails = async () => {
-      setLoading(true);
+    const loadBookData = async () => {
+      if (!workId) {
+        setError('No book ID provided');
+        setLoading(false);
+        return;
+      }
+
+      // Clean the workId to ensure it's in the correct format
+      const cleanWorkId = getCleanWorkId(workId);
+      
+      console.log('Loading book data for workId:', cleanWorkId);
+
       try {
-        // Add a minimum delay to ensure loading avatar is visible
-        const minDelay = new Promise(resolve => setTimeout(resolve, 3000));
+        setLoading(true);
+        setError(null);
         
-        // If we have book data in location state, use it
-        if (location.state && location.state.book) {
-          // Wait for minimum delay to ensure loading avatar is visible
-          await minDelay;
+        // First try to use the BookService fetchBookDetails function
+        try {
+          console.log('Trying BookService fetchBookDetails...');
+          const bookDetails = await fetchBookDetails(cleanWorkId);
           
-          setBook(location.state.book);
-          // Fetch additional details if needed
-          await fetchAdditionalDetails(location.state.book);
-        } else if (workId) {
-          // Otherwise fetch from API
-          const [_, response] = await Promise.all([
-            minDelay, // Wait for minimum delay
-            fetch(`https://openlibrary.org/works/${workId}.json`)
-          ]);
+          if (bookDetails && bookDetails.title) {
+            console.log('Successfully loaded book details:', bookDetails);
+            setBook(bookDetails);
+            
+            // Try to get author details if available
+            if (bookDetails.authorData) {
+              setAuthor(bookDetails.authorData);
+            }
+          } else {
+            throw new Error('No book details returned from service');
+          }
+        } catch (serviceError) {
+          console.warn('BookService failed, trying fallback:', serviceError.message);
           
-          if (!response.ok) {
-            throw new Error(`Failed to fetch book details: ${response.status}`);
+          // Try fallback books
+          let bookDetails = null;
+          if (FALLBACK_BOOKS && Array.isArray(FALLBACK_BOOKS)) {
+            bookDetails = FALLBACK_BOOKS.find(book => 
+              book.id === cleanWorkId || 
+              book.key === cleanWorkId || 
+              book.workId === cleanWorkId
+            );
           }
           
-          const data = await response.json();
+          if (bookDetails) {
+            // Use fallback book data
+            const enhancedBookDetails = {
+              ...bookDetails,
+              id: cleanWorkId,
+              coverUrl: bookDetails.coverUrl || bookDetails.primaryCoverUrl || '/default-book-cover.svg',
+              primaryCoverUrl: bookDetails.primaryCoverUrl || bookDetails.coverUrl || '/default-book-cover.svg',
+              alternativeCoverUrl: bookDetails.alternativeCoverUrl || '/default-book-cover.svg',
+              genres: bookDetails.subjects || (bookDetails.genre ? [bookDetails.genre] : ['Fiction']),
+              firstPublishDate: bookDetails.publishYear || 'Unknown',
+              description: bookDetails.description || 'No description available for this book.',
+              author: bookDetails.author || bookDetails.authorName || 'Unknown Author'
+            };
+            console.log('Using fallback book data:', enhancedBookDetails);
+            setBook(enhancedBookDetails);
+          } else {
+            // Try direct OpenLibrary API as last resort
+            try {
+              console.log('Trying direct OpenLibrary API...');
+              const bookResponse = await axios.get(`https://openlibrary.org/works/${cleanWorkId}.json`, {
+                timeout: 8000
+              });
+              const bookData = bookResponse.data;
           
-          // Get author information
-          let authorName = 'Unknown Author';
-          if (data.authors && data.authors.length > 0) {
-            const authorKey = data.authors[0].author.key;
-            const authorResponse = await fetch(`https://openlibrary.org${authorKey}.json`);
-            if (authorResponse.ok) {
-              const authorData = await authorResponse.json();
-              authorName = authorData.name || 'Unknown Author';
+              // Get cover image
+              const coverId = bookData.covers?.[0];
+              const coverUrl = coverId 
+                ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
+                : '/default-book-cover.svg';
+
+              // Get author details (enhanced)
+              let authorName = 'Unknown Author';
+              let authorData = null;
+              if (bookData.authors && bookData.authors.length > 0) {
+                try {
+                  const authorResponse = await axios.get(`https://openlibrary.org${bookData.authors[0].author.key}.json`, {
+                    timeout: 5000
+                  });
+                  authorName = authorResponse.data.name || 'Unknown Author';
+                  authorData = {
+                    name: authorResponse.data.name || 'Unknown Author',
+                    bio: authorResponse.data.bio?.value || authorResponse.data.bio || 'No biography available.',
+                    birthDate: authorResponse.data.birth_date || null,
+                    deathDate: authorResponse.data.death_date || null,
+                    key: bookData.authors[0].author.key,
+                    photoUrl: authorResponse.data.photos?.[0] 
+                      ? `https://covers.openlibrary.org/a/id/${authorResponse.data.photos[0]}-M.jpg`
+                      : null,
+                    wikipediaUrl: authorResponse.data.wikipedia || null,
+                    personalName: authorResponse.data.personal_name || authorResponse.data.name
+                  };
+                  setAuthor(authorData);
+                } catch (authorError) {
+                  console.warn('Error fetching author, using default:', authorError.message);
+                }
+              }
+
+              // Get subjects/genres
+              const genres = bookData.subjects ? bookData.subjects.slice(0, 5) : ['Fiction'];
+
+              const apiBookDetails = {
+                id: cleanWorkId,
+                title: bookData.title || 'Unknown Title',
+                author: authorName,
+                authorData: authorData,
+                authorImage: authorData?.photoUrl,
+                authorBio: authorData?.bio,
+                coverUrl: coverUrl,
+                primaryCoverUrl: coverUrl,
+                alternativeCoverUrl: `https://covers.openlibrary.org/b/olid/${cleanWorkId}-L.jpg`,
+                description: bookData.description?.value || bookData.description || 'No description available for this book.',
+                genres: genres,
+                firstPublishDate: bookData.first_publish_date || 'Unknown',
+                publishYear: bookData.first_publish_date?.split(' ').pop() || 'Unknown',
+                subjects: bookData.subjects || [],
+                language: 'English',
+                openLibraryUrl: `https://openlibrary.org/works/${cleanWorkId}`
+              };
+              
+              console.log('Fetched book data from API:', apiBookDetails);
+              setBook(apiBookDetails);
+            } catch (apiError) {
+              console.warn('OpenLibrary API failed, using generic book:', apiError.message);
+              
+              // Create a generic book object as absolute fallback
+              const genericBookDetails = {
+                id: cleanWorkId,
+                title: 'Book Details',
+                author: 'Unknown Author',
+                coverUrl: '/default-book-cover.svg',
+                primaryCoverUrl: '/default-book-cover.svg',
+                alternativeCoverUrl: '/default-book-cover.svg',
+                description: 'This book is available in our collection. Book details are currently being updated.',
+                genres: ['Fiction'],
+                firstPublishDate: 'Unknown',
+                subjects: [],
+                language: 'English'
+              };
+              setBook(genericBookDetails);
             }
           }
-          
-          // Format book data
-          const bookData = {
-            key: `/works/${workId}`,
-            title: data.title,
-            author: authorName,
-            coverUrl: data.covers && data.covers.length > 0 
-              ? `https://covers.openlibrary.org/b/id/${data.covers[0]}-M.jpg`
-              : '/default-book-cover.jpg',
-            largeCoverUrl: data.covers && data.covers.length > 0 
-              ? `https://covers.openlibrary.org/b/id/${data.covers[0]}-L.jpg`
-              : '/default-book-cover.jpg',
-            description: data.description?.value || data.description || 'No description available.',
-            firstPublishYear: data.first_publish_date || 'Unknown',
-            subjects: data.subjects || []
-          };
-          
-          setBook(bookData);
-          await fetchAdditionalDetails(bookData);
-        } else {
-          throw new Error('No book ID provided');
         }
+
+        // Fetch reviews from backend (non-blocking)
+        try {
+          console.log('Fetching reviews from backend...');
+          const reviewsResponse = await axios.get(`http://localhost:5001/api/books/works/${cleanWorkId}`, {
+            timeout: 5000
+          });
+          if (reviewsResponse.data) {
+            setReviews(reviewsResponse.data.reviews || []);
+            setAverageRating(reviewsResponse.data.averageRating || 0);
+            console.log('Reviews loaded successfully');
+          }
+        } catch (reviewError) {
+          console.warn('Failed to load reviews (non-critical):', reviewError.message);
+          setReviews([]);
+          setAverageRating(0);
+        }
+
       } catch (err) {
-        console.error('Error fetching book details:', err);
-        setError('Failed to load book details. Please try again later.');
+        console.error('Critical error loading book details:', err);
+        
+        // Last resort fallback - ensure we always have a book object
+        const fallbackBook = {
+          id: cleanWorkId,
+          title: 'Book Details',
+          author: 'Unknown Author',
+          coverUrl: '/default-book-cover.svg',
+          primaryCoverUrl: '/default-book-cover.svg',
+          alternativeCoverUrl: '/default-book-cover.svg',
+          description: 'We are currently experiencing technical difficulties loading book details. Please try again later.',
+          genres: ['Fiction'],
+          firstPublishDate: 'Unknown',
+          subjects: [],
+          language: 'English'
+        };
+        
+        setBook(fallbackBook);
+        setReviews([]);
+        setAverageRating(0);
+        setError('Unable to load complete book details, but you can still leave a review.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBookDetails();
-  }, [workId, location.state]);
-
-  // Fetch additional book details like reviews and related books
-  const fetchAdditionalDetails = async (bookData) => {
+    // Wrap the entire function in a try-catch to prevent component crashes
     try {
-      // Simulate fetching reviews (would be a real API call in production)
-      setReviews(generateMockReviews(bookData.title));
+      loadBookData();
+    } catch (componentError) {
+      console.error('Component error:', componentError);
+      setError('Something went wrong loading this page. Please try again.');
+      setLoading(false);
       
-      // Fetch related books based on subjects or author
-      if (bookData.subjects && bookData.subjects.length > 0) {
-        const randomSubject = bookData.subjects[Math.floor(Math.random() * bookData.subjects.length)];
-        try {
-          const response = await fetch(`https://openlibrary.org/subjects/${randomSubject.toLowerCase().replace(/\\s+/g, '_')}.json?limit=4`);
-          if (response.ok) {
-            const data = await response.json();
-            const relatedBooksData = data.works.map(book => ({
-              title: book.title,
-              author: book.authors?.[0]?.name || 'Unknown Author',
-              key: book.key,
-              coverUrl: book.cover_id 
-                ? `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg` 
-                : '/default-book-cover.jpg',
-              firstPublishYear: book.first_publish_year
-            }));
-            setRelatedBooks(relatedBooksData);
-          } else {
-            throw new Error('Failed to fetch related books');
+      // Set minimal fallback data
+      setBook({
+        id: getCleanWorkId(workId),
+        title: 'Book Details',
+        author: 'Unknown Author',
+        coverUrl: '/default-book-cover.svg',
+        description: 'Unable to load book details.',
+        genres: ['Fiction'],
+        firstPublishDate: 'Unknown'
+      });
+    }
+  }, [workId]);
+
+  // Handle rating click
+  const handleRatingClick = (rating) => {
+    setUserRating(rating);
+  };
+
+  // Handle review submission
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast.error('Please log in to submit a review');
+      navigate('/login');
+      return;
+    }
+
+    if (userRating === 0) {
+      toast.error('Please select a rating');
+      return;
+    }
+
+    if (!userReview.trim()) {
+      toast.error('Please write a review');
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `http://localhost:5001/api/books/works/${getCleanWorkId(workId)}/review`,
+        {
+          rating: userRating,
+          review: userReview
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
-        } catch (error) {
-          console.error('Error fetching related books:', error);
-          // Use fallback related books
-          setRelatedBooks(getFallbackWorks(bookData.author).slice(0, 3));
         }
-      } else {
-        // Use fallback related books
-        setRelatedBooks(getFallbackWorks(bookData.author).slice(0, 3));
-      }
+      );
+
+      // Add new review to the list
+      setReviews(prev => [response.data, ...prev]);
+      
+      // Recalculate average rating
+      const newAverage = (averageRating * reviews.length + userRating) / (reviews.length + 1);
+      setAverageRating(newAverage);
+
+      // Reset form
+      setUserRating(0);
+      setUserReview('');
+      
+      toast.success('Review submitted successfully!');
     } catch (error) {
-      console.error('Error fetching additional details:', error);
+      console.error('Error submitting review:', error);
+      if (error.response?.status === 400) {
+        toast.error(error.response.data.message || 'You have already reviewed this book');
+      } else {
+        toast.error('Failed to submit review. Please try again.');
+      }
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
-  // Generate mock reviews for demonstration
-  const generateMockReviews = (bookTitle) => {
-    return [
-      {
-        id: 1,
-        user: 'BookLover42',
-        rating: 4.5,
-        date: '2023-10-15',
-        content: `I thoroughly enjoyed ${bookTitle}. The character development was exceptional, and the plot kept me engaged from start to finish. Highly recommended for anyone who enjoys this genre.`
-      },
-      {
-        id: 2,
-        user: 'LiteraryExplorer',
-        rating: 5,
-        date: '2023-09-22',
-        content: `${bookTitle} is a masterpiece! The author's writing style is captivating, and the themes explored are both timely and timeless. This book will stay with you long after you've finished reading.`
-      },
-      {
-        id: 3,
-        user: 'CriticalReader',
-        rating: 3.5,
-        date: '2023-11-03',
-        content: `While ${bookTitle} has its moments of brilliance, I found some parts to be slow-paced. The ending was satisfying, though, and overall it's worth reading if you're a fan of the author.`
+  // Handle bookmark toggle
+  const handleBookmarkToggle = () => {
+    try {
+      if (!book || !book.id) {
+        toast.error('Unable to bookmark this book');
+        return;
       }
-    ];
+      
+      if (!isBookmarked || !addBookmark || !removeBookmark) {
+        toast.error('Bookmark feature is not available');
+        return;
+      }
+      
+      if (isBookmarked(book.id)) {
+        removeBookmark(book.id);
+        toast.success('Bookmark removed');
+      } else {
+        addBookmark(book);
+        toast.success('Book bookmarked');
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+      toast.error('Failed to update bookmark');
+    }
+  };
+
+  // Handle like toggle
+  const handleLikeToggle = () => {
+    try {
+      setIsLiked(!isLiked);
+      toast.success(isLiked ? 'Removed from favorites' : 'Added to favorites');
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      toast.error('Failed to update favorites');
+    }
   };
 
   // Render star rating
-  const renderStarRating = (rating) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
+  const renderStarRating = (rating, interactive = false, onStarClick = null) => {
     const stars = [];
-    
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<span key={`star-${i}`} className="star full-star">★</span>);
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <motion.button
+          key={i}
+          type="button"
+          className={`star-button ${interactive ? 'interactive' : ''}`}
+          onClick={() => interactive && onStarClick && onStarClick(i)}
+          whileHover={interactive ? { scale: 1.2 } : {}}
+          whileTap={interactive ? { scale: 0.9 } : {}}
+          disabled={!interactive}
+        >
+          {i <= rating ? (
+            <FaStar className="star-filled" />
+          ) : (
+            <FaRegStar className="star-empty" />
+          )}
+        </motion.button>
+      );
     }
-    
-    if (hasHalfStar) {
-      stars.push(<span key="half-star" className="star half-star">★</span>);
-    }
-    
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<span key={`empty-${i}`} className="star empty-star">☆</span>);
-    }
-    
     return stars;
   };
 
-  // Handle back button
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  // Handle tab change
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  // Handle related book click
-  const handleRelatedBookClick = (relatedBook) => {
-    const workId = relatedBook.key.replace('/works/', '');
-    navigate(`/book/${workId}`, { state: { book: relatedBook } });
-  };
-
+  // Loading state
   if (loading) {
     return (
-      <LoadingAvatar 
-        progress={50} 
-        message="Loading book details..."
-      />
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="simple-error-container">
-        <div className="simple-error-icon">!</div>
-        <h2>Oops! Something went wrong</h2>
-        <p>{error}</p>
-        <button className="simple-error-btn" onClick={handleBack}>Go Back</button>
+      <div className="bookhive-book-detail-loading">
+        <motion.div 
+          className="bookhive-loading-spinner"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <FaSpinner />
+        </motion.div>
+        <p>Loading book details...</p>
       </div>
     );
   }
 
+  // Only show error if we have a critical error AND no book data
+  if (error && !book) {
+    return (
+      <div className="bookhive-book-detail-error">
+        <h2>Book Not Found</h2>
+        <p>{error || 'The requested book could not be found.'}</p>
+        <button onClick={() => navigate('/books')} className="bookhive-back-button">
+          <FaArrowLeft /> Back to Books
+        </button>
+      </div>
+    );
+  }
+
+  // If we don't have book data yet, show loading
   if (!book) {
     return (
-      <div className="simple-error-container">
-        <div className="simple-error-icon">?</div>
-        <h2>Book Not Found</h2>
-        <p>We couldn't find the book you're looking for.</p>
-        <button className="simple-error-btn" onClick={handleBack}>Go Back</button>
+      <div className="bookhive-book-detail-loading">
+        <motion.div 
+          className="bookhive-loading-spinner"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <FaSpinner />
+        </motion.div>
+        <p>Loading book details...</p>
       </div>
     );
   }
 
+  // Render the main component with error boundary
+  try {
+
   return (
-    <div className="book-details-container">
-      <button className="back-button" onClick={handleBack}>
-        <span className="back-arrow">←</span> Back to Search
-      </button>
-      
-      <div className="simple-book-layout">
-        <div className="book-image-container">
-          <img className="book-image" src={book.largeCoverUrl || book.coverUrl} alt={book.title} />
+    <div className="bookhive-book-detail-page">
+      <div className="bookhive-book-detail-container">
+        {/* Header with back button */}
+        <motion.div 
+          className="bookhive-book-detail-header"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <button onClick={() => navigate('/books')} className="bookhive-back-button">
+            <FaArrowLeft /> Back to Books
+          </button>
           
-          <div className="book-quick-info">
-            {book.firstPublishYear && (
-              <div className="quick-info-item">
-                <span className="quick-info-label">Published:</span> {book.firstPublishYear}
-              </div>
-            )}
-            {reviews.length > 0 && (
-              <div className="quick-info-item">
-                <span className="quick-info-label">Rating:</span> {(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)}/5
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div className="book-info">
-          <h1 className="book-title">{book.title}</h1>
-          <h2 className="book-author">by {book.author}</h2>
-          
-          <div className="book-actions">
-            <button className="action-btn primary">Add to Reading List</button>
-            <button 
-              className="action-btn secondary"
-              onClick={() => navigate(`/write-review/${workId}`)}
+          <div className="bookhive-book-actions">
+            <motion.button
+              className={`bookhive-action-button ${isLiked ? 'active' : ''}`}
+              onClick={handleLikeToggle}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              Write a Review
-            </button>
-            <a 
-              href={generateAmazonLink(book.title, book.author)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="action-btn amazon"
+              {isLiked ? <FaHeart /> : <FaRegHeart />}
+            </motion.button>
+            
+            <motion.button
+              className={`bookhive-action-button ${isBookmarked && book?.id && isBookmarked(book.id) ? 'active' : ''}`}
+              onClick={handleBookmarkToggle}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              <span className="amazon-icon">🛒</span>
-              Buy on Amazon
-            </a>
+              {isBookmarked && book?.id && isBookmarked(book.id) ? <FaBookmark /> : <FaRegBookmark />}
+            </motion.button>
           </div>
-        </div>
-      </div>
-      
-      <div className="book-tabs">
-        <button 
-          className={`book-tab ${activeTab === 'details' ? 'active' : ''}`}
-          onClick={() => handleTabChange('details')}
+        </motion.div>
+
+        {/* Warning message for non-critical errors */}
+        {error && book && (
+          <motion.div 
+            className="bookhive-warning-message"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffeaa7',
+              borderRadius: '8px',
+              padding: '12px',
+              margin: '10px 0',
+              color: '#856404'
+            }}
+          >
+            <p><strong>Note:</strong> {error}</p>
+          </motion.div>
+        )}
+
+        {/* Book details section - Enhanced Layout */}
+        <motion.div 
+          className="bookhive-book-detail-content"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
-          Details
-        </button>
-        <button 
-          className={`book-tab ${activeTab === 'reviews' ? 'active' : ''}`}
-          onClick={() => handleTabChange('reviews')}
-        >
-          Reviews
-        </button>
-        <button 
-          className={`book-tab ${activeTab === 'related' ? 'active' : ''}`}
-          onClick={() => handleTabChange('related')}
-        >
-          Similar Books
-        </button>
-      </div>
-      
-      <div className="book-tab-content">
-        {activeTab === 'details' && (
-          <div className="details-section">
-            {book.subjects && book.subjects.length > 0 && (
-              <div className="book-subjects-container">
-                <h3>Genres</h3>
-                <div className="book-subjects">
-                  {book.subjects.slice(0, 6).map((subject, index) => (
-                    <span key={index} className="subject-tag">{subject}</span>
+          <div className="bookhive-book-detail-main-enhanced">
+            {/* Left Side - Book Cover */}
+            <div className="bookhive-book-cover-section-enhanced">
+              <div className="bookhive-book-cover-container">
+                <img
+                  src={book?.coverUrl || '/default-book-cover.svg'}
+                  alt={book?.title || 'Book Cover'}
+                  className="bookhive-book-detail-cover-enhanced"
+                  onError={(e) => {
+                    // Try alternative cover sources
+                    if (e.target.src !== '/default-book-cover.svg') {
+                      e.target.src = book?.primaryCoverUrl || book?.alternativeCoverUrl || '/default-book-cover.svg';
+                    }
+                  }}
+                />
+                
+                {/* Book Rating Badge */}
+                {averageRating > 0 && (
+                  <div className="bookhive-book-rating-badge">
+                    <div className="bookhive-rating-stars">
+                      {renderStarRating(Math.round(averageRating))}
+                    </div>
+                    <span className="bookhive-rating-text">
+                      {averageRating.toFixed(1)} ({reviews.length} review{reviews.length !== 1 ? 's' : ''})
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Book Actions */}
+              <div className="bookhive-book-actions-enhanced">
+                <motion.button
+                  className={`bookhive-action-btn ${isLiked ? 'active' : ''}`}
+                  onClick={handleLikeToggle}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isLiked ? <FaHeart /> : <FaRegHeart />}
+                  <span>Like</span>
+                </motion.button>
+                
+                <motion.button
+                  className={`bookhive-action-btn ${isBookmarked(book.id) ? 'active' : ''}`}
+                  onClick={handleBookmarkToggle}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isBookmarked(book.id) ? <FaBookmark /> : <FaRegBookmark />}
+                  <span>Save</span>
+                </motion.button>
+              </div>
+            </div>
+
+            {/* Center - Book Information */}
+            <div className="bookhive-book-info-section-enhanced">
+              <div className="bookhive-book-header">
+                <h1 className="bookhive-book-detail-title-enhanced">{book.title}</h1>
+                <p className="bookhive-book-detail-author-enhanced">by {book.author}</p>
+              </div>
+              
+              {/* Book Genres */}
+              {book.genres && book.genres.length > 0 && (
+                <div className="bookhive-book-genres-enhanced">
+                  {book.genres.slice(0, 4).map((genre, index) => (
+                    <span key={index} className="bookhive-genre-tag-enhanced">
+                      {genre}
+                    </span>
                   ))}
                 </div>
+              )}
+
+              {/* Book Meta Information */}
+              <div className="bookhive-book-meta-enhanced">
+                <div className="bookhive-meta-item-enhanced">
+                  <FaCalendarAlt className="bookhive-meta-icon" />
+                  <span>Published: {book.firstPublishDate}</span>
+                </div>
+                <div className="bookhive-meta-item-enhanced">
+                  <FaBook className="bookhive-meta-icon" />
+                  <span>Language: {book.language || 'English'}</span>
+                </div>
+                {book.subjects && book.subjects.length > 0 && (
+                  <div className="bookhive-meta-item-enhanced">
+                    <FaUser className="bookhive-meta-icon" />
+                    <span>Subjects: {book.subjects.slice(0, 3).join(', ')}</span>
+                  </div>
+                )}
               </div>
-            )}
-            
-            {book.description && (
-              <div className="book-description">
-                <h3>About this Book</h3>
+
+              {/* Book Description */}
+              <div className="bookhive-book-description-enhanced">
+                <h3>About This Book</h3>
                 <p>{book.description}</p>
               </div>
-            )}
-            
-            <div className="author-section">
-              <h3>About the Author</h3>
-              <div className="author-info">
-                <div className="author-avatar">
-                  <span>{book.author.charAt(0)}</span>
+
+              {/* Additional Book Stats */}
+              <div className="bookhive-book-stats">
+                <div className="bookhive-stat-item">
+                  <FaStar className="bookhive-stat-icon" />
+                  <span>{averageRating > 0 ? averageRating.toFixed(1) : 'N/A'}</span>
+                  <small>Rating</small>
                 </div>
-                <div className="author-details">
-                  <h4>{book.author}</h4>
-                  <button 
-                    className="view-author-btn"
-                    onClick={() => navigate(`/author/${encodeURIComponent(book.author)}`)}
-                  >
-                    View More Books
-                  </button>
+                <div className="bookhive-stat-item">
+                  <FaUsers className="bookhive-stat-icon" />
+                  <span>{reviews.length}</span>
+                  <small>Reviews</small>
+                </div>
+                <div className="bookhive-stat-item">
+                  <FaBook className="bookhive-stat-icon" />
+                  <span>{book.publishYear || 'N/A'}</span>
+                  <small>Year</small>
                 </div>
               </div>
             </div>
+
+            {/* Right Side - Author Information */}
+            <div className="bookhive-author-section-enhanced">
+              <div className="bookhive-author-card">
+                <div className="bookhive-author-image-container">
+                  <img
+                    src={book.authorImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(book.author)}&size=150&background=667eea&color=fff&bold=true`}
+                    alt={book.author}
+                    className="bookhive-author-image"
+                    onError={(e) => {
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(book.author)}&size=150&background=667eea&color=fff&bold=true`;
+                    }}
+                  />
+                </div>
+                
+                <div className="bookhive-author-info">
+                  <h4 className="bookhive-author-name">{book.author}</h4>
+                  <p className="bookhive-author-title">Author</p>
+                  
+                  {book.authorBio && (
+                    <p className="bookhive-author-bio">{book.authorBio}</p>
+                  )}
+                  
+                  <motion.button
+                    className="bookhive-author-btn"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate(`/author/${book.author.replace(/\s+/g, '-').toLowerCase()}`)}
+                  >
+                    View Author
+                  </motion.button>
+                </div>
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="bookhive-quick-actions">
+                <motion.button
+                  className="bookhive-quick-action-btn"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => window.open(book.openLibraryUrl || `https://openlibrary.org/works/${book.id}`, '_blank')}
+                >
+                  <FaBook />
+                  View on OpenLibrary
+                </motion.button>
+              </div>
+            </div>
           </div>
-        )}
-        
-        {activeTab === 'reviews' && (
-          <div className="reviews-section">
-            {reviews.length > 0 ? (
-              <div className="reviews-list">
-                {reviews.map((review) => (
-                  <div key={review.id} className="review-card">
-                    <div className="review-header">
-                      <div className="reviewer-info">
-                        <span className="reviewer-name">{review.user}</span>
-                        <span className="review-date">{review.date}</span>
+        </motion.div>
+
+        {/* Rating and Review Section */}
+        <motion.div 
+          className="bookhive-review-section"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <h2>Rate & Review This Book</h2>
+          
+          {user ? (
+            <form onSubmit={handleSubmitReview} className="bookhive-review-form">
+              <div className="bookhive-rating-input">
+                <label>Your Rating:</label>
+                <div className="bookhive-star-rating">
+                  {renderStarRating(userRating, true, handleRatingClick)}
+                </div>
+              </div>
+
+              <div className="bookhive-review-input">
+                <label htmlFor="review">Your Review:</label>
+                <textarea
+                  id="review"
+                  value={userReview}
+                  onChange={(e) => setUserReview(e.target.value)}
+                  placeholder="Share your thoughts about this book..."
+                  rows={4}
+                  className="bookhive-review-textarea"
+                />
+              </div>
+
+              <motion.button
+                type="submit"
+                className="bookhive-submit-review-button"
+                disabled={submittingReview || userRating === 0 || !userReview.trim()}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {submittingReview ? (
+                  <>
+                    <FaSpinner className="spinning" />
+                    Submitting...
+                  </>
+                ) : (
+                  'Submit Review'
+                )}
+              </motion.button>
+            </form>
+          ) : (
+            <div className="bookhive-login-prompt">
+              <p>Please log in to rate and review this book.</p>
+              <button 
+                onClick={() => navigate('/login')}
+                className="bookhive-login-button"
+              >
+                Log In
+              </button>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Reviews Display */}
+        <motion.div 
+          className="bookhive-reviews-display"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <h2>Reviews ({reviews.length})</h2>
+          
+          {reviews.length === 0 ? (
+            <div className="bookhive-no-reviews">
+              <p>No reviews yet. Be the first to review this book!</p>
+            </div>
+          ) : (
+            <div className="bookhive-reviews-list">
+              <AnimatePresence>
+                {reviews.map((review, index) => (
+                  <motion.div
+                    key={review._id}
+                    className="bookhive-review-card"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    <div className="bookhive-review-header">
+                      <div className="bookhive-reviewer-info">
+                        <FaUser className="bookhive-user-icon" />
+                        <span className="bookhive-reviewer-name">{review.userName}</span>
                       </div>
-                      <div className="review-rating">
+                      <div className="bookhive-review-rating">
                         {renderStarRating(review.rating)}
                       </div>
                     </div>
-                    <p className="review-content">{review.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="no-reviews">
-                <p>No reviews yet. Be the first to review this book!</p>
-              </div>
-            )}
-          </div>
-        )}
-        
-        {activeTab === 'related' && (
-          <div className="related-section">
-            {relatedBooks.length > 0 ? (
-              <div className="related-books-simple">
-                {relatedBooks.slice(0, 4).map((relatedBook, index) => (
-                  <div 
-                    key={index} 
-                    className="related-book-simple"
-                    onClick={() => handleRelatedBookClick(relatedBook)}
-                  >
-                    <div className="related-book-cover-simple">
-                      <img src={relatedBook.coverUrl} alt={relatedBook.title} />
+                    
+                    <p className="bookhive-review-text">{review.text}</p>
+                    
+                    <div className="bookhive-review-date">
+                      <FaCalendarAlt />
+                      {new Date(review.createdAt).toLocaleDateString()}
                     </div>
-                    <div className="related-book-info-simple">
-                      <h4 className="related-book-title-simple">{relatedBook.title}</h4>
-                      <p className="related-book-author-simple">{relatedBook.author}</p>
-                      <a 
-                        href={generateAmazonLink(relatedBook.title, relatedBook.author)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="related-book-amazon-link"
-                        onClick={(e) => e.stopPropagation()} // Prevent triggering the parent onClick
-                      >
-                        <span>🛒</span> Buy on Amazon
-                      </a>
-                    </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
-            ) : (
-              <div className="no-related">
-                <p>No similar books found.</p>
-              </div>
-            )}
-          </div>
-        )}
+              </AnimatePresence>
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );
+  
+  } catch (renderError) {
+    console.error('Error rendering BookDetails component:', renderError);
+    return (
+      <div className="bookhive-book-detail-error">
+        <h2>Something went wrong</h2>
+        <p>We encountered an error while loading this page. Please try again.</p>
+        <button onClick={() => navigate('/books')} className="bookhive-back-button">
+          <FaArrowLeft /> Back to Books
+        </button>
+        <button onClick={() => window.location.reload()} style={{ marginLeft: '10px' }}>
+          Refresh Page
+        </button>
+      </div>
+    );
+  }
 };
 
 export default BookDetails;
