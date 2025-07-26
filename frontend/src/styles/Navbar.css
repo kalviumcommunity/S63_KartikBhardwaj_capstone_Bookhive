@@ -65,7 +65,7 @@ body.scrolled-page {
   padding-top: var(--navbar-height-scrolled);
 }
 
-/* ===== Navbar Wrapper ===== */
+/* ===== Enhanced Navbar Wrapper with Exciting Animations ===== */
 .navbar-wrapper {
   position: fixed;
   top: 0;
@@ -76,6 +76,55 @@ body.scrolled-page {
   background-color: var(--bg-color);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-normal);
+  animation: navbarSlideIn 0.8s ease-out;
+  overflow: hidden;
+}
+
+/* Navbar entrance animation */
+@keyframes navbarSlideIn {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(5px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Add animated background particles */
+.navbar-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(114, 9, 183, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(67, 97, 238, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(247, 37, 133, 0.02) 0%, transparent 50%);
+  animation: particleFloat 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateX(0) translateY(0) scale(1);
+    opacity: 0.5;
+  }
+  33% {
+    transform: translateX(10px) translateY(-5px) scale(1.1);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translateX(-5px) translateY(3px) scale(0.9);
+    opacity: 0.6;
+  }
 }
 
 .navbar-wrapper::before {
@@ -148,6 +197,49 @@ body.scrolled-page {
   margin-top: -30px;
   transition: all var(--transition-normal);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  animation: logoFloat 4s ease-in-out infinite;
+  cursor: pointer;
+}
+
+/* Logo floating animation */
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  }
+  25% {
+    transform: translateY(-2px) rotate(0.5deg);
+    filter: drop-shadow(0 6px 10px rgba(114, 9, 183, 0.15));
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+    filter: drop-shadow(0 4px 8px rgba(67, 97, 238, 0.1));
+  }
+  75% {
+    transform: translateY(-1px) rotate(-0.5deg);
+    filter: drop-shadow(0 5px 9px rgba(247, 37, 133, 0.12));
+  }
+}
+
+/* Enhanced logo hover effect */
+.logo-image:hover {
+  animation: logoExcited 0.6s ease-in-out infinite;
+  filter: drop-shadow(0 8px 20px rgba(114, 9, 183, 0.3)) !important;
+}
+
+@keyframes logoExcited {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(1deg);
+  }
+  50% {
+    transform: scale(1.08) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(-1deg);
+  }
 }
 
 .logo-shine {
@@ -247,6 +339,44 @@ body.scrolled-page {
   border-radius: var(--radius-md);
   transition: all var(--transition-normal);
   z-index: 1;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Add magical hover ripple effect */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(114, 9, 183, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.6s ease-out;
+  z-index: -1;
+}
+
+.nav-link:hover::before {
+  width: 200px;
+  height: 200px;
+  animation: ripplePulse 1.5s ease-out infinite;
+}
+
+@keyframes ripplePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
 }
 
 .nav-icon-wrapper {
@@ -288,16 +418,43 @@ body.scrolled-page {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(114, 9, 183, 0.08);
+  background: linear-gradient(135deg, rgba(114, 9, 183, 0.08), rgba(67, 97, 238, 0.06));
   border-radius: var(--radius-md);
   z-index: 0;
   transform-origin: bottom;
   animation: navHighlight 0.5s var(--transition-bounce);
+  box-shadow: 0 0 15px rgba(114, 9, 183, 0.1);
 }
 
 @keyframes navHighlight {
-  0% { transform: scaleY(0); opacity: 0; }
-  100% { transform: scaleY(1); opacity: 1; }
+  0% { 
+    transform: scaleY(0) scaleX(0.8); 
+    opacity: 0; 
+  }
+  50% { 
+    transform: scaleY(0.8) scaleX(1.1); 
+    opacity: 0.6; 
+  }
+  100% { 
+    transform: scaleY(1) scaleX(1); 
+    opacity: 1; 
+  }
+}
+
+/* Add pulsing effect to active nav highlight */
+.nav-item.active .nav-highlight {
+  animation: navHighlightPulse 3s ease-in-out infinite;
+}
+
+@keyframes navHighlightPulse {
+  0%, 100% {
+    background: linear-gradient(135deg, rgba(114, 9, 183, 0.08), rgba(67, 97, 238, 0.06));
+    box-shadow: 0 0 15px rgba(114, 9, 183, 0.1);
+  }
+  50% {
+    background: linear-gradient(135deg, rgba(114, 9, 183, 0.12), rgba(67, 97, 238, 0.08));
+    box-shadow: 0 0 25px rgba(114, 9, 183, 0.2);
+  }
 }
 
 /* Nav item hover and active states */
@@ -362,6 +519,7 @@ body.scrolled-page {
 /* ===== Unique BookHive Search ===== */
 .search-item {
   position: relative;
+  background: transparent !important; /* Force transparent background */
 }
 
 .bookhive-search {
@@ -369,6 +527,7 @@ body.scrolled-page {
   display: flex;
   align-items: center;
   height: 100%;
+  background: transparent !important; /* Force transparent background */
 }
 
 /* Bookshelf Search Toggle */
@@ -721,7 +880,7 @@ body.scrolled-page {
 .mobile-bookhive-search {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: rgba(114, 9, 183, 0.03);
+  background-color: transparent; /* Remove background to match other nav elements */
 }
 
 .mobile-bookshelf-header {
@@ -1310,6 +1469,451 @@ body.scrolled-page {
   justify-content: center;
 }
 
+/* ===== Find Books Button - Following Navbar Pattern with Unique Search Animation ===== */
+.find-books-button-redesigned {
+  /* Follow exact same styling as other navbar buttons */
+  background: transparent !important; /* Same transparent background as other nav buttons */
+  background-color: transparent !important; /* Force transparent background */
+  color: var(--text-color) !important; /* Same text color as other nav buttons */
+  border: none !important;
+  font-weight: 500 !important; /* Same font weight as other nav buttons */
+  border-radius: var(--radius-md) !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  box-shadow: none !important; /* Remove any box shadow */
+  /* All other styling inherited from .nav-link class */
+}
+
+/* Force transparent background on all states */
+.find-books-button-redesigned,
+.find-books-button-redesigned:hover,
+.find-books-button-redesigned:focus,
+.find-books-button-redesigned:active {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Hover effect following navbar pattern exactly */
+.nav-item.search-item:hover .find-books-button-redesigned {
+  color: var(--primary-color) !important; /* Same primary color as other nav buttons on hover */
+  transform: translateY(-2px) !important; /* Same lift effect as other nav items */
+}
+
+/* Advanced Animated Search Icon Styling */
+.find-books-button-redesigned .animated-search-icon {
+  stroke: currentColor !important;
+  overflow: visible !important;
+}
+
+.nav-item.search-item:hover .find-books-button-redesigned .animated-search-icon {
+  stroke: var(--primary-color) !important;
+  transform: scale(1.2) !important;
+}
+
+/* Search Circle Animation */
+.find-books-button-redesigned .search-circle {
+  animation: searchCirclePulse 2.5s ease-in-out infinite !important;
+  transform-origin: center !important;
+}
+
+.nav-item.search-item:hover .find-books-button-redesigned .search-circle {
+  animation: searchCircleRotate 1.5s linear infinite !important;
+}
+
+/* Search Handle Animation */
+.find-books-button-redesigned .search-handle {
+  animation: searchHandleSlide 3s ease-in-out infinite !important;
+  transform-origin: center !important;
+}
+
+.nav-item.search-item:hover .find-books-button-redesigned .search-handle {
+  animation: searchHandleActive 0.8s ease-in-out infinite !important;
+}
+
+/* Search Rays Animation */
+.find-books-button-redesigned .search-rays {
+  animation: searchRaysRotate 4s linear infinite !important;
+  transform-origin: 11px 11px !important;
+}
+
+.nav-item.search-item:hover .find-books-button-redesigned .search-rays {
+  animation: searchRaysActive 1.2s ease-in-out infinite !important;
+  transform-origin: 11px 11px !important;
+}
+
+.find-books-button-redesigned .ray {
+  animation: rayFlicker 2s ease-in-out infinite !important;
+}
+
+.find-books-button-redesigned .ray-1 { animation-delay: 0s !important; }
+.find-books-button-redesigned .ray-2 { animation-delay: 0.5s !important; }
+.find-books-button-redesigned .ray-3 { animation-delay: 1s !important; }
+.find-books-button-redesigned .ray-4 { animation-delay: 1.5s !important; }
+
+/* Icon glow effect for Find Books button - same as other nav buttons */
+.find-books-button-redesigned .nav-icon-glow {
+  background: radial-gradient(circle at center, rgba(114, 9, 183, 0.1) 0%, transparent 70%) !important;
+}
+
+.nav-item.search-item:hover .find-books-button-redesigned .nav-icon-glow {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+/* Text styling for Find Books button - same as other nav buttons */
+.find-books-button-redesigned .nav-text {
+  color: inherit !important;
+  font-weight: 500 !important;
+}
+
+/* Advanced Search Icon Animations */
+@keyframes searchCirclePulse {
+  0%, 100% { 
+    stroke-width: 2;
+    opacity: 1;
+  }
+  50% { 
+    stroke-width: 2.5;
+    opacity: 0.8;
+  }
+}
+
+@keyframes searchCircleRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes searchHandleSlide {
+  0%, 100% { 
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+  25% { 
+    transform: translateX(0.5px) translateY(0.5px);
+    opacity: 0.9;
+  }
+  75% { 
+    transform: translateX(-0.5px) translateY(-0.5px);
+    opacity: 0.9;
+  }
+}
+
+@keyframes searchHandleActive {
+  0%, 100% { 
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  50% { 
+    transform: translateX(1px) translateY(1px) scale(1.1);
+  }
+}
+
+@keyframes searchRaysRotate {
+  0% { transform: rotate(0deg); opacity: 0.6; }
+  100% { transform: rotate(360deg); opacity: 0.6; }
+}
+
+@keyframes searchRaysActive {
+  0%, 100% { 
+    transform: rotate(0deg) scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: rotate(180deg) scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes rayFlicker {
+  0%, 100% { 
+    opacity: 0.3;
+    stroke-width: 1.5;
+  }
+  50% { 
+    opacity: 0.8;
+    stroke-width: 2;
+  }
+}
+
+/* ===== Animated Icons for All Navbar Buttons ===== */
+
+/* HOME ICON ANIMATIONS */
+.animated-home-icon .home-structure {
+  animation: homeBreathing 3s ease-in-out infinite;
+}
+
+.nav-item:hover .animated-home-icon .home-structure {
+  animation: homeHover 1.5s ease-in-out infinite;
+}
+
+.animated-home-icon .home-door {
+  animation: doorSway 4s ease-in-out infinite;
+}
+
+.nav-item:hover .animated-home-icon .home-door {
+  animation: doorOpen 0.8s ease-in-out infinite;
+}
+
+.animated-home-icon .smoke {
+  animation: smokeRise 2s ease-in-out infinite;
+}
+
+.animated-home-icon .smoke-1 { animation-delay: 0s; }
+.animated-home-icon .smoke-2 { animation-delay: 0.5s; }
+.animated-home-icon .smoke-3 { animation-delay: 1s; }
+
+@keyframes homeBreathing {
+  0%, 100% { stroke-width: 2; opacity: 1; }
+  50% { stroke-width: 2.2; opacity: 0.9; }
+}
+
+@keyframes homeHover {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes doorSway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(0.5px); }
+}
+
+@keyframes doorOpen {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.9); }
+}
+
+@keyframes smokeRise {
+  0% { opacity: 0.4; transform: translateY(0) scale(1); }
+  50% { opacity: 0.8; transform: translateY(-2px) scale(1.2); }
+  100% { opacity: 0.2; transform: translateY(-4px) scale(0.8); }
+}
+
+/* BOOKS ICON ANIMATIONS */
+.animated-books-icon .book-cover {
+  animation: bookBreathing 3.5s ease-in-out infinite;
+}
+
+.nav-item:hover .animated-books-icon .book-cover {
+  animation: bookFlip 1.2s ease-in-out infinite;
+}
+
+.animated-books-icon .page {
+  animation: pageFlutter 2s ease-in-out infinite;
+}
+
+.animated-books-icon .page-1 { animation-delay: 0s; }
+.animated-books-icon .page-2 { animation-delay: 0.3s; }
+.animated-books-icon .page-3 { animation-delay: 0.6s; }
+.animated-books-icon .page-4 { animation-delay: 0.9s; }
+
+@keyframes bookBreathing {
+  0%, 100% { stroke-width: 2; }
+  50% { stroke-width: 2.3; }
+}
+
+@keyframes bookFlip {
+  0%, 100% { transform: rotateY(0deg); }
+  50% { transform: rotateY(10deg); }
+}
+
+@keyframes pageFlutter {
+  0%, 100% { opacity: 0.6; stroke-width: 1; }
+  50% { opacity: 1; stroke-width: 1.5; }
+}
+
+/* MOOD ICON ANIMATIONS */
+.animated-mood-icon .mood-face {
+  animation: moodPulse 2.5s ease-in-out infinite;
+}
+
+.nav-item:hover .animated-mood-icon .mood-face {
+  animation: moodHappy 1s ease-in-out infinite;
+}
+
+.animated-mood-icon .mood-smile {
+  animation: smileGrow 3s ease-in-out infinite;
+}
+
+.animated-mood-icon .mood-eye {
+  animation: eyeBlink 4s ease-in-out infinite;
+}
+
+.animated-mood-icon .eye-left { animation-delay: 0s; }
+.animated-mood-icon .eye-right { animation-delay: 0.1s; }
+
+.animated-mood-icon .sparkle {
+  animation: sparkleShine 2s ease-in-out infinite;
+}
+
+.animated-mood-icon .sparkle-1 { animation-delay: 0s; }
+.animated-mood-icon .sparkle-2 { animation-delay: 0.7s; }
+.animated-mood-icon .sparkle-3 { animation-delay: 1.4s; }
+
+@keyframes moodPulse {
+  0%, 100% { stroke-width: 2; }
+  50% { stroke-width: 2.5; }
+}
+
+@keyframes moodHappy {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes smileGrow {
+  0%, 100% { stroke-width: 2; }
+  50% { stroke-width: 2.5; }
+}
+
+@keyframes eyeBlink {
+  0%, 90%, 100% { r: 1; }
+  95% { r: 0.2; }
+}
+
+@keyframes sparkleShine {
+  0%, 100% { opacity: 0.4; r: 0.3; }
+  50% { opacity: 1; r: 0.6; }
+}
+
+/* REVIEWS ICON ANIMATIONS */
+.animated-reviews-icon .review-document {
+  animation: documentSway 3s ease-in-out infinite;
+}
+
+.animated-reviews-icon .review-pen {
+  animation: penWrite 2s ease-in-out infinite;
+}
+
+.nav-item:hover .animated-reviews-icon .review-pen {
+  animation: penActive 0.8s ease-in-out infinite;
+}
+
+.animated-reviews-icon .writing-line {
+  animation: typewriter 3s ease-in-out infinite;
+}
+
+.animated-reviews-icon .line-1 { animation-delay: 0s; }
+.animated-reviews-icon .line-2 { animation-delay: 1s; }
+.animated-reviews-icon .line-3 { animation-delay: 2s; }
+
+@keyframes documentSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1deg); }
+}
+
+@keyframes penWrite {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(0.5px) translateY(0.5px); }
+  75% { transform: translateX(-0.5px) translateY(-0.5px); }
+}
+
+@keyframes penActive {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+  50% { transform: translateX(1px) translateY(1px) rotate(2deg); }
+}
+
+@keyframes typewriter {
+  0% { stroke-dasharray: 0, 100; }
+  50% { stroke-dasharray: 50, 100; }
+  100% { stroke-dasharray: 100, 100; }
+}
+
+/* LOGIN ICON ANIMATIONS */
+.animated-login-icon .login-frame {
+  animation: doorFrame 3s ease-in-out infinite;
+}
+
+.animated-login-icon .login-arrow {
+  animation: arrowSlide 2s ease-in-out infinite;
+}
+
+.nav-item:hover .animated-login-icon .login-arrow {
+  animation: arrowActive 1s ease-in-out infinite;
+}
+
+@keyframes doorFrame {
+  0%, 100% { stroke-width: 2; }
+  50% { stroke-width: 2.2; }
+}
+
+@keyframes arrowSlide {
+  0%, 100% { transform: translateX(0); opacity: 0.8; }
+  50% { transform: translateX(2px); opacity: 1; }
+}
+
+@keyframes arrowActive {
+  0%, 100% { transform: translateX(0) scale(1); }
+  50% { transform: translateX(3px) scale(1.1); }
+}
+
+/* SIGNUP ICON ANIMATIONS */
+.animated-signup-icon .signup-frame {
+  animation: signupFrame 3s ease-in-out infinite;
+}
+
+.animated-signup-icon .plus-vertical {
+  animation: plusGrowVertical 2s ease-in-out infinite;
+}
+
+.animated-signup-icon .plus-horizontal {
+  animation: plusGrowHorizontal 2s ease-in-out infinite 0.5s;
+}
+
+.nav-item:hover .animated-signup-icon .signup-plus {
+  animation: plusSpin 1.5s ease-in-out infinite;
+}
+
+@keyframes signupFrame {
+  0%, 100% { stroke-width: 2; }
+  50% { stroke-width: 2.2; }
+}
+
+@keyframes plusGrowVertical {
+  0%, 100% { stroke-width: 2; opacity: 0.8; }
+  50% { stroke-width: 3; opacity: 1; }
+}
+
+@keyframes plusGrowHorizontal {
+  0%, 100% { stroke-width: 2; opacity: 0.8; }
+  50% { stroke-width: 3; opacity: 1; }
+}
+
+@keyframes plusSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* CHAT ICON ANIMATIONS */
+.animated-chat-icon .chat-bubble {
+  animation: bubbleFloat 3s ease-in-out infinite;
+}
+
+.nav-item:hover .animated-chat-icon .chat-bubble {
+  animation: bubbleActive 1.2s ease-in-out infinite;
+}
+
+.animated-chat-icon .typing-dot {
+  animation: typingBounce 1.5s ease-in-out infinite;
+}
+
+.animated-chat-icon .dot-1 { animation-delay: 0s; }
+.animated-chat-icon .dot-2 { animation-delay: 0.3s; }
+.animated-chat-icon .dot-3 { animation-delay: 0.6s; }
+
+@keyframes bubbleFloat {
+  0%, 100% { transform: translateY(0); stroke-width: 2; }
+  50% { transform: translateY(-1px); stroke-width: 2.2; }
+}
+
+@keyframes bubbleActive {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes typingBounce {
+  0%, 100% { r: 1; opacity: 0.6; }
+  50% { r: 1.3; opacity: 1; }
+}
+
 .mobile-nav-icon svg {
   width: 22px;
   height: 22px;
@@ -1720,30 +2324,93 @@ body.dark-mode .mobile-nav-item.active .mobile-nav-link {
   60% { transform: translateY(-5px); }
 }
 
-/* Apply animations to elements */
+/* ===== Exciting Entrance Animations ===== */
 .logo-link {
-  animation: fadeIn 0.6s ease-out;
+  animation: logoEntrance 1s ease-out;
 }
 
+@keyframes logoEntrance {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(-90deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Staggered nav item entrance animations */
 .nav-item {
-  animation: slideInRight 0.4s ease-out backwards;
+  animation: navItemSlideIn 0.8s ease-out backwards;
 }
 
-.nav-item:nth-child(1) { animation-delay: 0.1s; }
-.nav-item:nth-child(2) { animation-delay: 0.2s; }
-.nav-item:nth-child(3) { animation-delay: 0.3s; }
-.nav-item:nth-child(4) { animation-delay: 0.4s; }
+.nav-item:nth-child(1) { animation-delay: 0.2s; }
+.nav-item:nth-child(2) { animation-delay: 0.3s; }
+.nav-item:nth-child(3) { animation-delay: 0.4s; }
+.nav-item:nth-child(4) { animation-delay: 0.5s; }
+.nav-item:nth-child(5) { animation-delay: 0.6s; }
+.nav-item:nth-child(6) { animation-delay: 0.7s; }
 
+@keyframes navItemSlideIn {
+  0% {
+    transform: translateY(-30px) rotateX(-90deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(5px) rotateX(-45deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+/* Button entrance animations */
 .action-button, .auth-button {
-  animation: scaleIn 0.4s ease-out backwards;
+  animation: buttonBounceIn 0.8s ease-out backwards;
 }
 
-.search-toggle { animation-delay: 0.5s; }
-.login-button { animation-delay: 0.6s; }
-.signup-button { animation-delay: 0.7s; }
-.menu-toggle { animation-delay: 0.8s; }
+.search-toggle { animation-delay: 0.8s; }
+.login-button { animation-delay: 0.9s; }
+.signup-button { animation-delay: 1s; }
+.menu-toggle { animation-delay: 1.1s; }
 
-/* Special animation for the logo on page load */
+@keyframes buttonBounceIn {
+  0% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3) rotate(90deg);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(0.9) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Enhanced logo animation on page load */
 .logo-image {
-  animation: bounce 1.2s ease-out 1s;
+  animation: logoFloat 4s ease-in-out infinite, logoSparkle 1.2s ease-out 1s;
+}
+
+@keyframes logoSparkle {
+  0%, 100% { 
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1)); 
+  }
+  50% { 
+    filter: drop-shadow(0 8px 20px rgba(114, 9, 183, 0.4)) 
+           drop-shadow(0 0 30px rgba(67, 97, 238, 0.3)); 
+  }
 } 

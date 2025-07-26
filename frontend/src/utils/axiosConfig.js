@@ -348,11 +348,10 @@ export const initializeLoadingInterceptors = (loadingContext) => {
       if (!config.cached) {
         activeRequests++;
         
-        if (activeRequests === 1) {
-          // Only show loading avatar for the first request
-          // Use the minimum display time to ensure avatar is visible
-          startLoading('Loading data...', MIN_DISPLAY_TIME);
-        }
+        // Loading disabled - comment out to re-enable
+        // if (activeRequests === 1) {
+        //   startLoading('Loading data...', MIN_DISPLAY_TIME);
+        // }
       }
       return config;
     },
@@ -392,9 +391,10 @@ export const initializeLoadingInterceptors = (loadingContext) => {
       if (!config.cached) {
         activeRequests++;
         
-        if (activeRequests === 1) {
-          startLoading('Loading book data...', MIN_DISPLAY_TIME);
-        }
+        // Loading disabled - comment out to re-enable
+        // if (activeRequests === 1) {
+        //   startLoading('Loading book data...', MIN_DISPLAY_TIME);
+        // }
       }
       return config;
     },
@@ -431,9 +431,10 @@ export const initializeLoadingInterceptors = (loadingContext) => {
     config => {
       activeRequests++;
       
-      if (activeRequests === 1) {
-        startLoading('Connecting to server...', MIN_DISPLAY_TIME);
-      }
+      // Loading disabled - comment out to re-enable  
+      // if (activeRequests === 1) {
+      //   startLoading('Connecting to server...', MIN_DISPLAY_TIME);
+      // }
       return config;
     },
     error => {

@@ -69,7 +69,7 @@ const LoadingPage = ({
             message={message}
             size="large"
             position="center"
-            showFacts={true}
+            showFacts={false}
           />
         </div>
         

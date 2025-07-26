@@ -155,8 +155,8 @@ const ExploreCategories = () => {
                 headers: {
                   'Accept': 'application/json',
                 },
-                // Add timeout
-                signal: AbortSignal.timeout(5000)
+                // Increased timeout to 10 seconds
+                signal: AbortSignal.timeout(10000)
               }
             );
 
@@ -173,7 +173,7 @@ const ExploreCategories = () => {
               subject_info: data.subject || config.subject
             };
           } catch (error) {
-            console.warn(`Failed to fetch data for ${config.subject}:`, error);
+            console.log(`Using fallback data for ${config.subject} (API timeout/error):`, error.message);
             // Return fallback data
             return {
               ...config,

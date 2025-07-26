@@ -104,11 +104,13 @@ export const LoadingProvider = ({ children }) => {
   return (
     <LoadingContext.Provider value={value}>
       {children}
+      {/* Loading overlay disabled - uncomment to re-enable
       {isLoading && typeof window !== 'undefined' && (
         <div className={styles.global_loading_overlay}>
           <LoadingAvatar progress={progress} message={message} />
         </div>
       )}
+      */}
     </LoadingContext.Provider>
   );
 };

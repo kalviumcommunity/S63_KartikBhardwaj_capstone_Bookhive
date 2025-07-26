@@ -5,6 +5,18 @@ const reviewSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  bookTitle: {
+    type: String,
+    default: 'Unknown Title'
+  },
+  bookAuthor: {
+    type: String,
+    default: 'Unknown Author'
+  },
+  bookCover: {
+    type: String,
+    default: ''
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -13,6 +25,10 @@ const reviewSchema = new mongoose.Schema({
   review: {
     type: String,
     required: true
+  },
+  // Keep comment for backward compatibility
+  comment: {
+    type: String
   },
   rating: {
     type: Number,

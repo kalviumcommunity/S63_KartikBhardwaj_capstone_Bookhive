@@ -6,6 +6,7 @@ const axios = require('axios');
 const http = require('http');
 const bookRoutes = require('./routes/bookRoutes');
 const authRoutes = require('./routes/auth');
+const reviewRoutes = require('./routes/reviews');
 const reviewRequestRoutes = require('./routes/reviewRequestRoutes');
 const otpRoutes = require('./routes/otp');
 const aiRoutes = require('./routes/aiRoutes');
@@ -105,6 +106,7 @@ app.get('/api/openlibrary/*', async (req, res) => {
 // Routes
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/review-requests', reviewRequestRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/ai', aiRoutes);

@@ -98,11 +98,13 @@ export const LoadingProvider = ({ children }) => {
   return (
     <LoadingContext.Provider value={value}>
       {children}
+      {/* Loading overlay disabled - uncomment to re-enable
       {isLoading && (
         <div className="global-loading-overlay">
           <LoadingAvatar progress={progress} message={message} />
         </div>
       )}
+      */}
     </LoadingContext.Provider>
   );
 };

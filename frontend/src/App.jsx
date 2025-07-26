@@ -50,6 +50,7 @@ import FeaturedBooksPage from "./components/FeaturedBooksPage";
 import FeaturedBooks from "./components/FeaturedBooks";
 import ExploreCategories from "./components/ExploreCategories";
 import CategoryBooks from "./components/CategoryBooks";
+import BookDetailsPage from "./components/BookDetailsPage";
 import BookOfTheMonth from "./components/BookOfTheMonth";
 import BookOfTheMonthDetail from "./components/BookOfTheMonthDetail";
 
@@ -160,6 +161,7 @@ function App() {
                   <Route path="/carousel" element={<BookCarousel />} />
                   <Route path="/books/featured" element={<FeaturedBooksPage />} />
                   <Route path="/category/:category" element={<CategoryBooks />} />
+                  <Route path="/book-details" element={<BookDetailsPage />} />
                   <Route path="/book-of-the-month/:bookId" element={<BookOfTheMonthDetail />} />
                   <Route
                     path="*"

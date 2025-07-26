@@ -9,7 +9,6 @@ const FEATURED_WORK_IDS = [
   'OL7343626W', // 1984
   'OL45804W', // To Kill a Mockingbird
   'OL20525W', // The Great Gatsby
-  'OL15333W', // Pride and Prejudice
   'OL17860W', // The Catcher in the Rye
   'OL262758W', // The Hobbit
   'OL893996W', // Dune
@@ -1077,13 +1076,55 @@ export const getAuthorDetails = async (authorKey) => {
 export const getBookOfTheMonth = async () => {
   try {
     const currentMonth = new Date().getMonth();
-    const bookIndex = currentMonth % FEATURED_WORK_IDS.length;
+    
+    console.log('📅 Current Month:', currentMonth);
+    console.log('📚 Total Featured Books:', FEATURED_WORK_IDS.length);
+    
+    // Force "To Kill a Mockingbird" for December (month 11) to completely avoid Pride and Prejudice
+    if (currentMonth === 11) {
+      console.log('🎯 Forcing "To Kill a Mockingbird" for December');
+      const fallback = {
+        id: 'OL45804W',
+        title: 'To Kill a Mockingbird',
+        author: 'Harper Lee',
+        genre: 'Fiction',
+        description: 'A gripping tale of racial injustice and childhood innocence in the American South. Through the eyes of Scout Finch, we witness her father Atticus defend a black man falsely accused of rape, teaching timeless lessons about morality, prejudice, and standing up for what is right.',
+        reviews: 1523,
+        rating: 4.6,
+        publishYear: 1960,
+        subjects: ['Classic literature', 'Coming of age', 'Social justice', 'American South', 'Racism', 'Moral courage']
+      };
+      const alternativeCoverUrl = getAlternativeCoverUrl(fallback.id, fallback.title);
+      return {
+        ...fallback,
+        coverUrl: alternativeCoverUrl || getCoverUrl(fallback.id),
+        primaryCoverUrl: getCoverUrl(fallback.id),
+        alternativeCoverUrl: alternativeCoverUrl,
+        authorName: fallback.author
+      };
+    }
+    
+    let bookIndex = currentMonth % FEATURED_WORK_IDS.length;
     const selectedWorkId = FEATURED_WORK_IDS[bookIndex];
+    
+    console.log('📖 Book Index:', bookIndex);
+    console.log('🔍 Selected Work ID:', selectedWorkId);
     
     const bookData = await fetchBookDetails(selectedWorkId);
     
     if (!bookData) {
-      const fallback = FALLBACK_BOOKS[0];
+      // Use hardcoded fallback to avoid Pride and Prejudice
+      const fallback = {
+        id: 'OL45804W',
+        title: 'To Kill a Mockingbird',
+        author: 'Harper Lee',
+        genre: 'Fiction',
+        description: 'A gripping tale of racial injustice and childhood innocence in the American South. Through the eyes of Scout Finch, we witness her father Atticus defend a black man falsely accused of rape, teaching timeless lessons about morality, prejudice, and standing up for what is right.',
+        reviews: 1523,
+        rating: 4.6,
+        publishYear: 1960,
+        subjects: ['Classic literature', 'Coming of age', 'Social justice', 'American South', 'Racism', 'Moral courage']
+      };
       const alternativeCoverUrl = getAlternativeCoverUrl(fallback.id, fallback.title);
       return {
         ...fallback,
@@ -1097,7 +1138,18 @@ export const getBookOfTheMonth = async () => {
     return bookData;
   } catch (error) {
     console.error('Error fetching book of the month:', error);
-    const fallback = FALLBACK_BOOKS[0];
+    // Use hardcoded fallback to avoid Pride and Prejudice
+    const fallback = {
+      id: 'OL45804W',
+      title: 'To Kill a Mockingbird',
+      author: 'Harper Lee',
+      genre: 'Fiction',
+      description: 'A gripping tale of racial injustice and childhood innocence in the American South. Through the eyes of Scout Finch, we witness her father Atticus defend a black man falsely accused of rape, teaching timeless lessons about morality, prejudice, and standing up for what is right.',
+      reviews: 1523,
+      rating: 4.6,
+      publishYear: 1960,
+      subjects: ['Classic literature', 'Coming of age', 'Social justice', 'American South', 'Racism', 'Moral courage']
+    };
     const alternativeCoverUrl = getAlternativeCoverUrl(fallback.id, fallback.title);
     return {
       ...fallback,

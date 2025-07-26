@@ -74,8 +74,40 @@ router.post('/works/:bookId/review', auth, async (req, res) => {
       return res.status(400).json({ message: 'You have already reviewed this book' });
     }
 
+    // Fetch book details from Open Library to store with the review
+    let bookTitle = 'Unknown Book';
+    let bookAuthor = 'Unknown Author';
+    let bookCover = '';
+    
+    try {
+      const bookKey = bookId.startsWith('/') ? bookId.slice(1) : bookId;
+      const bookResponse = await axios.get(`https://openlibrary.org/works/${bookKey}.json`);
+      bookTitle = bookResponse.data.title || bookTitle;
+      
+      // Get author information
+      if (bookResponse.data.authors && bookResponse.data.authors.length > 0) {
+        try {
+          const authorKey = bookResponse.data.authors[0].author.key;
+          const authorResponse = await axios.get(`https://openlibrary.org${authorKey}.json`);
+          bookAuthor = authorResponse.data.name || bookAuthor;
+        } catch (authorError) {
+          console.error('Error fetching author details:', authorError);
+        }
+      }
+      
+      // Get cover URL
+      if (bookResponse.data.covers && bookResponse.data.covers.length > 0) {
+        bookCover = `https://covers.openlibrary.org/b/id/${bookResponse.data.covers[0]}-M.jpg`;
+      }
+    } catch (error) {
+      console.log('Could not fetch book details:', error);
+    }
+
     const newReview = new Review({
       bookId,
+      bookTitle,
+      bookAuthor,
+      bookCover,
       userId,
       review,
       rating
@@ -85,16 +117,6 @@ router.post('/works/:bookId/review', auth, async (req, res) => {
 
     // Populate user information
     await newReview.populate('userId', 'username');
-
-    // Get book title for notification (you might want to fetch this from your book data)
-    let bookTitle = 'Unknown Book';
-    try {
-      // Try to get book title from Open Library or your database
-      const bookResponse = await axios.get(`https://openlibrary.org/works/${bookId}.json`);
-      bookTitle = bookResponse.data.title || bookTitle;
-    } catch (error) {
-      console.log('Could not fetch book title for notification');
-    }
 
     // Trigger notification for new review
     try {
@@ -116,7 +138,9 @@ router.post('/works/:bookId/review', auth, async (req, res) => {
       text: newReview.review,
       rating: newReview.rating,
       userName: newReview.userId.username,
-      createdAt: newReview.createdAt
+      createdAt: newReview.createdAt,
+      bookTitle: newReview.bookTitle,
+      bookAuthor: newReview.bookAuthor
     });
   } catch (error) {
     console.error('Error adding review:', error);
@@ -129,9 +153,28 @@ router.get('/reviews/user', auth, async (req, res) => {
   try {
     const userId = req.user._id;
     const reviews = await Review.find({ userId })
+      .populate({
+        path: 'userId',
+        select: 'username avatar',
+        model: 'User'
+      })
       .sort({ createdAt: -1 });
 
-    res.json(reviews);
+    // Format reviews with book details for consistency
+    const reviewsWithDetails = reviews.map(review => {
+      return {
+        ...review.toObject(),
+        bookDetails: {
+          title: review.bookTitle || 'Unknown Title',
+          author: review.bookAuthor || 'Unknown Author',
+          coverUrl: review.bookCover || '/images/book-covers/fiction-book.jpg',
+          largeCoverUrl: review.bookCover || '/images/book-covers/fiction-book.jpg',
+          olid: review.bookId
+        }
+      };
+    });
+
+    res.json(reviewsWithDetails);
   } catch (error) {
     console.error('Error fetching user reviews:', error);
     res.status(500).json({ message: 'Error fetching reviews' });
@@ -153,36 +196,18 @@ router.get('/reviews/all', async (req, res) => {
     // Filter out reviews with missing user data
     const validReviews = reviews.filter(review => review.userId);
 
-    // Fetch book details for each review
-    const reviewsWithDetails = await Promise.all(
-      validReviews.map(async (review) => {
-        try {
-          const bookKey = review.bookId.startsWith('/') ? review.bookId.slice(1) : review.bookId;
-          const bookResponse = await axios.get(`https://openlibrary.org/works/${bookKey}.json`);
-          
-          return {
-            ...review.toObject(),
-            bookDetails: {
-              title: bookResponse.data.title || 'Unknown Title',
-              author: bookResponse.data.authors?.[0]?.name || 'Unknown Author',
-              cover_i: review.cover_i,
-              description: bookResponse.data.description?.value || bookResponse.data.description || 'No description available'
-            }
-          };
-        } catch (error) {
-          console.error('Error fetching book details:', error);
-          return {
-            ...review.toObject(),
-            bookDetails: {
-              title: 'Book Title Unavailable',
-              author: 'Author Unknown',
-              cover_i: null,
-              description: 'Book details temporarily unavailable'
-            }
-          };
+    // Use stored book details instead of fetching from Open Library
+    const reviewsWithDetails = validReviews.map(review => {
+      return {
+        ...review.toObject(),
+        bookDetails: {
+          title: review.bookTitle || 'Unknown Title',
+          author: review.bookAuthor || 'Unknown Author',
+          coverUrl: review.bookCover || '/images/book-covers/fiction-book.jpg',
+          description: 'Book details available'
         }
-      })
-    );
+      };
+    });
 
     res.json(reviewsWithDetails);
   } catch (error) {

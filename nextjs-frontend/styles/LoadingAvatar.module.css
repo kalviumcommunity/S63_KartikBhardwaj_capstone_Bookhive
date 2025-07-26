@@ -182,43 +182,7 @@
   animation: step_right 2s infinite;
 }
 
-.speech_bubble {
-  position: absolute;
-  top: -80px;
-  right: -100px;
-  background-color: white;
-  border-radius: 20px;
-  padding: 15px;
-  max-width: 250px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
 
-.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.speech_bubble::after {
-  content: '';
-  position: absolute;
-  bottom: 15px;
-  left: -10px;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-  transform: rotate(45deg);
-  box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.05);
-}
-
-.speech_bubble p {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: #4a5568;
-}
 
 .loading_message {
   text-align: center;
