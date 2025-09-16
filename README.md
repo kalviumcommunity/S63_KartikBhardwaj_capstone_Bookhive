@@ -1,164 +1,135 @@
-📚 BookHive – Discover, Review & Connect
-Welcome to BookHive, a full-stack web application that connects book lovers around the world. Whether you're searching for your next read, sharing thoughtful reviews, or exploring diverse perspectives, BookHive makes it easy to dive deep into the world of books — together.
+# 📚 BookHive – Discover, Review & Connect  
 
-✨ Overview
-BookHive is your go-to platform to:
+<div align="center">
+  
+✨ *Your all-in-one hub for book lovers around the world* ✨  
 
-🔍 Discover new books by title, author, or genre
-✍️ Write and read insightful reviews
-🌟 Rate books and engage with a vibrant reading community
-👥 Connect with fellow readers and follow your favorite reviewers
-📚 Build your personal library and track your reading journey
+![BookHive Banner](https://img.shields.io/badge/BookHive-Discover%20%7C%20Review%20%7C%20Connect-purple?style=for-the-badge&logo=bookstack)  
+[![Frontend](https://img.shields.io/badge/Live_Frontend-BookHiveee.netlify.app-blue?style=for-the-badge&logo=vercel)](https://bookhiveee.netlify.app/)  
+[![Backend](https://img.shields.io/badge/Live_Backend-Render_API-green?style=for-the-badge&logo=render)](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)  
 
-Whether you're a fan of thrilling mysteries, inspiring memoirs, or academic research — BookHive brings them all together under one interactive hub.
+</div>  
 
+---
 
-🚀 Features at a Glance
-🔎 Book Discovery
-1. Smart search by title, author, or genre
-2. Detailed book view with summary, publication info, and community ratings
+## ✨ Overview  
 
+BookHive is a **full-stack MERN web app** where readers can:  
 
-📝 Review System
-1. Write, read, update, and delete reviews
-2. Rate books (1–5 stars)
-3. Upvote helpful reviews to highlight valuable insights
+- 🔍 Discover books by title, author, or genre  
+- ✍️ Share thoughtful reviews  
+- 🌟 Rate books & upvote helpful insights  
+- 👥 Connect with readers & follow reviewers  
+- 📚 Build your personal library & track reading journey  
 
+---
 
-👤 User Profiles
+## 🚀 Features at a Glance  
 
-1. Personalized dashboard with user stats
-2. Track your reading history, favorite books, and wishlist
-3. Follow and unfollow users to build a custom reading circle
+<details>
+<summary>🔎 <b>Book Discovery</b></summary>
 
+- Smart search by **title, author, or genre**  
+- Detailed book view with **summary, ratings & publication info**  
 
-🛠️ Admin Panel
+</details>
 
-1. Review moderation (report, approve, delete)
-2. Manage user accounts and book entries
+<details>
+<summary>📝 <b>Review System</b></summary>
 
+- CRUD reviews (create, update, delete)  
+- 1–5 star ratings  
+- Upvote reviews to highlight best insights  
 
+</details>
 
-📈 Scalable Roadmap (Coming Soon)
+<details>
+<summary>👤 <b>User Profiles</b></summary>
 
-1. Book clubs and discussion threads
-2. Reading challenges and achievement badges
-3. Advanced API integrations for richer book metadata
+- Personalized dashboard with stats  
+- Reading history, wishlist & favorites  
+- Follow/unfollow users  
 
+</details>
 
-🗂️ Categories
+<details>
+<summary>🛡️ <b>Admin Panel</b></summary>
 
-Explore books across multiple domains:
+- Moderate reviews (report, approve, delete)  
+- Manage users & book entries  
 
-1. 📘 Fiction – Fantasy, Sci-Fi, Romance, Mystery
-2. 📕 Non-Fiction – Biographies, History, Self-Help
-3. 📗 Academic – Textbooks, Research Papers
+</details>
 
-🛠️ Tech Stack
+---
 
-Layer	                     Technology
+## 🛠️ Tech Stack  
 
-Frontend	                 React.js, Tailwind CSS, React Router
-Backend	                     Node.js, Express.js, JWT Authentication
-Database	                 MongoDB + Mongoose
-APIs & Auth	                 Google Books API, Firebase (Google Sign-In), Email OTP Verification
-Deployment	                 Vercel (Frontend), Render (Backend), MongoDB Atlas (Cloud DB)
+| Layer      | Technology |
+|------------|------------|
+| **Frontend** | React.js, Tailwind CSS, React Router |
+| **Backend**  | Node.js, Express.js, JWT Auth |
+| **Database** | MongoDB + Mongoose |
+| **APIs/Auth** | Google Books API, Firebase (Google Sign-In), Email OTP Verification |
+| **Deployment** | Vercel (Frontend), Render (Backend), MongoDB Atlas |
 
+---
 
+## 🧭 UI Flow  
 
-🧭 UI Flow
+📌 **Landing Page** → Search & featured books  
+📌 **Auth** → Email OTP + Google OAuth  
+📌 **Dashboard** → Filters, book grid, reviews  
+📌 **Profile Page** → Stats, history, wishlist  
+📌 **Admin Panel** → Manage users & content  
 
-1. 🏠 Landing Page: Hero section, search bar, featured books, and call-to-action buttons
-2. 🔐 Authentication: Email OTP Verification, Google OAuth, password reset
-3. 📚 Dashboard: Book filters, responsive grid, modals for book details and reviews
-4. 👤 Profile Page: User stats, reading history, wishlist, and account settings
-5. 🛡️ Admin Panel: Manage reviews, users, and book content with moderation tools
+---
 
-🗓️ Development Roadmap
-Week 1: Setup & Authentication
+## 🗓️ Development Roadmap  
 
-✅ Initialize frontend (Vite + React) and backend (Express)
-✅ MongoDB + Mongoose schemas (User, Book, Review)
-✅ JWT-based authentication
-✅ Google OAuth integration via Firebase
-✅ Secure protected routes
-✅ Deploy backend to Render for testing
+✅ **Week 1**: Setup & Authentication  
+✅ **Week 2**: Core Features (Books, Reviews, Profiles)  
+✅ **Week 3**: UI/UX + Admin Tools  
+✅ **Week 4**: Testing & Final Deployment  
 
+---
 
-Week 2: Core Features
+## 🔐 Email OTP Verification  
 
-✅ Integrate Google Books API for dynamic search
-✅ Book detail pages with metadata and reviews
-✅ Full CRUD review system
-✅ Link users to reviews and books
-✅ Build user profile and follow system
-✅ User flow testing (search, review, follow)
+📧 Secure signup with **OTP-based verification**  
 
+- OTP generated server-side  
+- User enters OTP to confirm account  
+- Can integrate with **SendGrid, Mailgun, AWS SES** for production  
 
+---
 
-Week 3: UI/UX & Admin Tools
+## 🧪 Testing  
 
-✅ Responsive UI with Tailwind CSS
-✅ Admin dashboard
-✅ Review moderation (report, delete)
-✅ Pagination for books and reviews
-✅ API performance improvements via caching
-✅ UI polish and optional animations (Framer Motion)
-✅ Internal feature demo
+- 🧼 **Backend**: Postman  
+- 🧪 **Frontend**: Jest + React Testing Library  
 
-Week 4: Testing & Launch
+---
 
-✅ Backend testing via Postman
-✅ Frontend testing (Jest, React Testing Library)
-✅ Debugging and bug fixes
-✅ Final deployments: Vercel (frontend) & Render (backend)
-✅ Write final documentation & record demo video
+## 🌐 Live Links  
 
+- 🔗 **Frontend** → [BookHive App](https://bookhiveee.netlify.app/)  
+- 🔗 **Backend** → [BookHive API](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)  
 
+---
 
-🧪 Testing Tools
+## 🏁 Conclusion  
 
-1. 🧼 Backend Testing: Postman
-2. 🧪 Frontend Unit Tests: Jest, React Testing Library
+BookHive isn’t just a project — it’s a **community-driven platform** with:  
 
+✅ Clean architecture  
+✅ Secure authentication  
+✅ Scalable roadmap  
+✅ Developer best practices  
 
+> 🎉 Ready to showcase as a **real-world full-stack MERN application**!  
 
+---
 
-
-
-🔐 Email OTP Verification System
- BookHive implements a secure OTP-based email verification system during user signup to ensure authenticity and reduce spam registrations.
-
-🛠️ How it Works:
-
-
-1. Upon signup, an OTP is generated server-side and logged to the console
-2. The user is prompted to enter the OTP for verification
-3. Once confirmed, the account is flagged as email-verified
-
-
-
-
-
-
-🧑‍💻 Developer Notes:
-
-1. 📄 backend/OTP_VERIFICATION_GUIDE.md – Setup and usage instructions
-2. ⚙️ backend/services/hybridOtpService.js – OTP generation logic
-3. 🔐 backend/routes/auth.js – Routes for signup and OTP validation
-
-To upgrade for production, integrate with email providers like:
-
-1. SendGrid
-2. Mailgun
-3. AWS SES
-
-
-🌐 Live Links
-
-1. 🔗 **Frontend**: [BookHive Live App](https://bookhiv.netlify.app/)
-2. 🔗 **Backend API**: [BookHive API Server](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)
-
-🏁 Conclusion
-BookHive is more than a project — it’s a real-world scalable application designed with both community experience and developer best practices in mind. From clean architecture and modular design to thoughtful UI/UX and secure authentication, BookHive is ready to be showcased as a serious full-stack MERN application.
-
+<div align="center">  
+💡 *Made with ❤️ by Kartik Bhardwaj*  
+</div>
