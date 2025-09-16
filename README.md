@@ -7,6 +7,11 @@
 [![Frontend](https://img.shields.io/badge/🚀_Live_Frontend-BookHiveee.netlify.app-00F7FF?style=for-the-badge&logo=vercel&logoColor=white)](https://bookhiveee.netlify.app/)  
 [![Backend](https://img.shields.io/badge/⚡_Live_Backend-Render_API-7FFF00?style=for-the-badge&logo=render&logoColor=white)](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)  
 
+---
+
+🔗 **Quick Access**  
+[🌐 Portfolio](https://portfolio-website-lilac-xi-72.vercel.app/) ・ [💻 GitHub About](https://github.com/kartikbhardwaj1111)
+
 </div>
 
 ---
@@ -62,8 +67,6 @@
 ---
 
 ## 🖼️ Futuristic UI Sneak Peek  
-
-> (*replace with your screenshots/GIFs later*)  
 
 | Landing Page | Dashboard | Profile |  
 |--------------|-----------|---------|  
