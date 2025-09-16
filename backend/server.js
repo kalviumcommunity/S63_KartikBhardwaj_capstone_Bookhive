@@ -21,6 +21,9 @@ require('./passport'); // Will create this file for Google OAuth config
 
 dotenv.config();
 
+// Set mongoose options to avoid deprecation warnings
+mongoose.set('strictQuery', false);
+
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5001;
@@ -114,16 +117,37 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/bookhive', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('MongoDB connected');
-  seedBooks(); 
-})
-.catch((err) => console.error('MongoDB connection error:', err));
+// MongoDB connection with fallback
+const connectDB = async () => {
+  try {
+    // Try MongoDB Atlas first
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB Atlas connected successfully');
+    seedBooks();
+  } catch (err) {
+    console.error('MongoDB Atlas connection failed:', err.message);
+    console.log('Attempting to connect to local MongoDB...');
+    
+    try {
+      // Fallback to local MongoDB
+      await mongoose.connect('mongodb://localhost:27017/bookhive', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log('Local MongoDB connected successfully');
+      seedBooks();
+    } catch (localErr) {
+      console.error('Local MongoDB connection also failed:', localErr.message);
+      console.log('Server will continue without database connection');
+      console.log('Please check your MongoDB Atlas credentials or install MongoDB locally');
+    }
+  }
+};
+
+connectDB();
 
 // Initialize Socket.IO
 socketService.initialize(server);

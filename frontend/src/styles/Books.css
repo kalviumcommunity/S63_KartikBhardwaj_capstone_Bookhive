@@ -1,10 +1,13 @@
 /* BookHive Books Page - Complete Redesign */
 .bookhive-books-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 80px); /* Account for navbar height */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 0;
   position: relative;
   overflow-x: hidden;
+  z-index: 1; /* Keep below navbar z-index (1000) */
+  /* Ensure proper stacking context - never overlap navbar */
+  isolation: isolate;
 }
 
 .bookhive-books-page::before {
@@ -18,14 +21,16 @@
     radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
   pointer-events: none;
+  z-index: -1; /* Keep background behind content */
 }
 
 .bookhive-books-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top: 1rem; /* Reduced top padding since body already has navbar padding */
   position: relative;
-  z-index: 1;
+  z-index: 2; /* Above the background but below navbar */
 }
 
 /* Header Section */
@@ -450,6 +455,12 @@
 @media (max-width: 768px) {
   .bookhive-books-container {
     padding: 1rem;
+    padding-top: 0.5rem; /* Less top padding on mobile */
+  }
+  
+  /* Ensure Books page doesn't interfere with navbar on mobile */
+  .bookhive-books-page {
+    min-height: calc(100vh - 70px); /* Account for smaller navbar on mobile */
   }
   
   .bookhive-books-title {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaArrowLeft,
@@ -26,10 +26,12 @@ import '../styles/BookDetails.css';
 const BookDetails = () => {
   const { workId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth() || {};
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarks() || {};
   
   console.log('BookDetails component rendered with workId:', workId);
+  console.log('Location state:', location.state);
   
   // Safe toast function
   const safeToast = (message, type = 'info') => {
@@ -80,6 +82,52 @@ const BookDetails = () => {
       try {
         setLoading(true);
         setError(null);
+        
+        // Check if we have book data from mood matcher first
+        if (location.state && location.state.book && location.state.fromMoodMatcher) {
+          console.log('Using book data from mood matcher:', location.state.book);
+          const moodBook = location.state.book;
+          
+          // Enhance the mood book data with proper structure for BookDetails
+          const enhancedBookData = {
+            ...moodBook,
+            id: cleanWorkId,
+            workId: cleanWorkId,
+            // Ensure we have all required fields
+            title: moodBook.title,
+            author: moodBook.author,
+            authorName: moodBook.author,
+            description: moodBook.description || `A captivating ${moodBook.genre || 'book'} that will keep you engaged from start to finish.`,
+            coverUrl: moodBook.coverUrl || moodBook.largeCoverUrl,
+            largeCoverUrl: moodBook.largeCoverUrl || moodBook.coverUrl,
+            publishYear: moodBook.publishYear || moodBook.firstPublishYear,
+            firstPublishYear: moodBook.firstPublishYear || moodBook.publishYear,
+            rating: moodBook.rating || '4.0',
+            genre: moodBook.genre,
+            mood: moodBook.mood,
+            reason: moodBook.reason,
+            subjects: moodBook.subjects || [],
+            isbn: moodBook.isbn,
+            // Add some additional metadata
+            source: 'mood-matcher',
+            isMoodRecommendation: true
+          };
+          
+          setBook(enhancedBookData);
+          setLoading(false);
+          
+          // Scroll to reviews if requested
+          if (location.state.scrollToReviews) {
+            setTimeout(() => {
+              const reviewSection = document.querySelector('.bookhive-review-section');
+              if (reviewSection) {
+                reviewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 500);
+          }
+          
+          return; // Skip the normal loading process
+        }
         
         // First try to use the BookService fetchBookDetails function
         try {
@@ -592,6 +640,21 @@ const BookDetails = () => {
               <div className="bookhive-book-header">
                 <h1 className="bookhive-book-detail-title-enhanced">{book.title}</h1>
                 <p className="bookhive-book-detail-author-enhanced">by {book.author}</p>
+                
+                {/* Mood Recommendation Badge */}
+                {book.isMoodRecommendation && book.mood && (
+                  <div className="bookhive-mood-recommendation-badge">
+                    <span className="mood-badge-icon">🎯</span>
+                    <span className="mood-badge-text">
+                      Recommended for your <strong>{book.mood}</strong> mood
+                    </span>
+                    {book.reason && (
+                      <div className="mood-badge-reason">
+                        <em>"{book.reason}"</em>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               
               {/* Book Genres */}

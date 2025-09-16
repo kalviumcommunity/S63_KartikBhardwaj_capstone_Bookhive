@@ -132,21 +132,12 @@ router.get('/info', (req, res) => {
     success: true,
     data: {
       email: 'kbrupc2020@gmail.com',
-      phone: '+1 (555) 123-4567', // You can update this with your actual phone
-      address: 'BookHive Headquarters, Reading City, RC 12345', // Update with your address
+      phone: '9917044xxx',
+      address: 'Greater Noida sector - 1',
       socialMedia: {
-        linkedin: 'https://linkedin.com/in/kartikbhardwaj',
-        github: 'https://github.com/kartikbhardwaj',
-        twitter: 'https://twitter.com/kartikbhardwaj'
-      },
-      businessHours: {
-        monday: '9:00 AM - 6:00 PM',
-        tuesday: '9:00 AM - 6:00 PM',
-        wednesday: '9:00 AM - 6:00 PM',
-        thursday: '9:00 AM - 6:00 PM',
-        friday: '9:00 AM - 6:00 PM',
-        saturday: '10:00 AM - 4:00 PM',
-        sunday: 'Closed'
+        linkedin: 'https://www.linkedin.com/in/kartik-bhardwaj-0b82a8316/',
+        github: 'https://github.com/kartikbhardwaj1111',
+        portfolio: 'https://portfolio-website-lilac-xi-72.vercel.app/'
       }
     }
   });

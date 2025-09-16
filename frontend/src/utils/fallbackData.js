@@ -236,67 +236,135 @@ export const getFallbackAuthor = (authorName) => {
   return null;
 };
 
-// Fallback mood-based book recommendations
+// Fallback mood-based book recommendations with actual OpenLibrary covers
 export const getMoodBasedBooks = (mood) => {
   const moodBooks = {
     happy: [
       {
         title: 'The Hitchhiker\'s Guide to the Galaxy',
         author: 'Douglas Adams',
-        coverUrl: 'https://covers.openlibrary.org/b/id/7371944-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/7371944-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/7371944-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/7371944-L.jpg',
+          'https://covers.openlibrary.org/b/id/7371944-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0345391802-L.jpg',
+          'https://covers.openlibrary.org/b/isbn/0345391802-M.jpg'
+        ],
         key: '/works/OL2080981W',
-        firstPublishYear: '1979'
+        firstPublishYear: '1979',
+        isbn: '0345391802',
+        hasOpenLibraryCover: true
       },
       {
         title: 'Good Omens',
         author: 'Terry Pratchett & Neil Gaiman',
-        coverUrl: 'https://covers.openlibrary.org/b/id/8406786-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/8406786-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/8406786-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/8406786-L.jpg',
+          'https://covers.openlibrary.org/b/id/8406786-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0060853980-L.jpg',
+          'https://covers.openlibrary.org/b/isbn/0060853980-M.jpg'
+        ],
         key: '/works/OL15933W',
-        firstPublishYear: '1990'
+        firstPublishYear: '1990',
+        isbn: '0060853980',
+        hasOpenLibraryCover: true
       },
       {
         title: 'The Princess Bride',
         author: 'William Goldman',
-        coverUrl: 'https://covers.openlibrary.org/b/id/8739161-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/8739161-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/8739161-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/8739161-L.jpg',
+          'https://covers.openlibrary.org/b/id/8739161-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0156035219-L.jpg',
+          'https://covers.openlibrary.org/b/isbn/0156035219-M.jpg'
+        ],
         key: '/works/OL45883W',
-        firstPublishYear: '1973'
+        firstPublishYear: '1973',
+        isbn: '0156035219',
+        hasOpenLibraryCover: true
       },
       {
         title: 'Bridget Jones\'s Diary',
         author: 'Helen Fielding',
-        coverUrl: 'https://covers.openlibrary.org/b/id/8477139-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/8477139-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/8477139-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/8477139-L.jpg',
+          'https://covers.openlibrary.org/b/id/8477139-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0140298495-L.jpg',
+          'https://covers.openlibrary.org/b/isbn/0140298495-M.jpg'
+        ],
         key: '/works/OL15933W',
-        firstPublishYear: '1996'
+        firstPublishYear: '1996',
+        isbn: '0140298495',
+        hasOpenLibraryCover: true
       }
     ],
     relaxed: [
       {
         title: 'Walden',
         author: 'Henry David Thoreau',
-        coverUrl: 'https://covers.openlibrary.org/b/id/8091016-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/8091016-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/8091016-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/8091016-L.jpg',
+          'https://covers.openlibrary.org/b/id/8091016-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0486284956-L.jpg'
+        ],
         key: '/works/OL1097236W',
-        firstPublishYear: '1854'
+        firstPublishYear: '1854',
+        isbn: '0486284956',
+        hasOpenLibraryCover: true
       },
       {
         title: 'The Poetry of Robert Frost',
         author: 'Robert Frost',
-        coverUrl: 'https://covers.openlibrary.org/b/id/393853-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/393853-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/393853-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/393853-L.jpg',
+          'https://covers.openlibrary.org/b/id/393853-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0805005021-L.jpg'
+        ],
         key: '/works/OL2163649W',
-        firstPublishYear: '1969'
+        firstPublishYear: '1969',
+        isbn: '0805005021',
+        hasOpenLibraryCover: true
       },
       {
         title: 'The Secret Garden',
         author: 'Frances Hodgson Burnett',
-        coverUrl: 'https://covers.openlibrary.org/b/id/8514426-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/8514426-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/8514426-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/8514426-L.jpg',
+          'https://covers.openlibrary.org/b/id/8514426-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0486284956-L.jpg'
+        ],
         key: '/works/OL45883W',
-        firstPublishYear: '1911'
+        firstPublishYear: '1911',
+        isbn: '0486284956',
+        hasOpenLibraryCover: true
       },
       {
         title: 'Under the Tuscan Sun',
         author: 'Frances Mayes',
-        coverUrl: 'https://covers.openlibrary.org/b/id/8477139-M.jpg',
+        coverUrl: 'https://covers.openlibrary.org/b/id/8477139-L.jpg',
+        largeCoverUrl: 'https://covers.openlibrary.org/b/id/8477139-L.jpg',
+        coverOptions: [
+          'https://covers.openlibrary.org/b/id/8477139-L.jpg',
+          'https://covers.openlibrary.org/b/id/8477139-M.jpg',
+          'https://covers.openlibrary.org/b/isbn/0767900383-L.jpg'
+        ],
         key: '/works/OL15933W',
-        firstPublishYear: '1996'
+        firstPublishYear: '1996',
+        isbn: '0767900383',
+        hasOpenLibraryCover: true
       }
     ],
     adventurous: [

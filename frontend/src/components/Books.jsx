@@ -13,7 +13,10 @@ import {
 import { HiOutlineSparkles } from 'react-icons/hi';
 import { toast } from 'react-toastify';
 import { searchBooksAdvanced, getBooksByGenre, getTrendingBooks, getAllBooks, getPopularTrendingBooks } from '../services/BookService';
+import { validateAndFilterBooks, removeDuplicateBooks, preloadCriticalImages } from '../utils/enhancedImageUtils';
+import EnhancedBookCover from './EnhancedBookCover';
 import '../styles/Books.css';
+import '../styles/EnhancedBooks.css';
 
 const Books = () => {
   const navigate = useNavigate();
@@ -81,9 +84,31 @@ const Books = () => {
       }
       
       if (result && result.books) {
-        setBooks(result.books);
+        // Enhanced book processing
+        let processedBooks = result.books;
+        
+        // Step 1: Validate and filter books
+        processedBooks = validateAndFilterBooks(processedBooks);
+        
+        // Step 2: Remove duplicates
+        processedBooks = removeDuplicateBooks(processedBooks);
+        
+        // Step 3: Ensure we have exactly 48 books for main view (pad with fallbacks if needed)
+        if (!searchQuery.trim() && selectedGenre === 'all' && processedBooks.length < 48) {
+          console.log(`Only found ${processedBooks.length} books, padding to 48`);
+          // You can add additional fallback logic here if needed
+        }
+        
+        console.log(`Processed ${processedBooks.length} unique, validated books`);
+        
+        setBooks(processedBooks);
         setTotalPages(result.totalPages || 1);
         setCurrentPage(page);
+        
+        // Preload critical images for better performance
+        if (page === 1) {
+          preloadCriticalImages(processedBooks, 8);
+        }
       } else {
         setBooks([]);
         setTotalPages(1);
@@ -363,122 +388,106 @@ const Books = () => {
 
               {/* Books Grid */}
               <AnimatePresence>
-                <div className="bookhive-books-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4" style={{ position: 'relative', zIndex: 3 }}>
                   {books.map((book, index) => (
                     <motion.div
-                      key={book.id || book.key || index}
-                      className="bookhive-book-card"
-                      onClick={() => handleBookClick(book)}
+                      key={`${book.id || book.key || book.title}-${index}`}
+                      className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      whileHover={{ 
-                        y: -8, 
-                        scale: 1.02,
-                        transition: { duration: 0.2 }
-                      }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      whileHover={{ y: -8 }}
+                      style={{ zIndex: 5 }} // Keep below navbar
                     >
-                      {/* Rating Badge */}
-                      {book.rating && (
-                        <motion.div 
-                          className="bookhive-book-rating-badge"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          <FaStar className="bookhive-rating-star" />
-                          {book.rating.toFixed(1)}
-                        </motion.div>
-                      )}
-
-                      {/* Book Cover - Large and Prominent */}
-                      <div className="bookhive-book-cover-container">
-                        <img
-                          src={getBookCoverUrl(book)}
-                          alt={book.title}
-                          className="bookhive-book-cover"
-                          loading="lazy"
-                          onError={(e) => {
-                            // Try alternative sources before falling back to default
-                            if (e.target.src !== '/default-book-cover.svg') {
-                              if (book.alternativeCoverUrl && e.target.src !== book.alternativeCoverUrl) {
-                                e.target.src = book.alternativeCoverUrl;
-                              } else if (book.primaryCoverUrl && e.target.src !== book.primaryCoverUrl) {
-                                e.target.src = book.primaryCoverUrl;
-                              } else {
-                                // Generate a nice placeholder with book info
-                                const title = encodeURIComponent(book.title.substring(0, 15));
-                                e.target.src = `https://ui-avatars.com/api/?name=${title}&size=300&background=667eea&color=fff&bold=true&format=png`;
-                              }
-                            }
-                          }}
+                      {/* Book Cover */}
+                      <div className="p-4 flex justify-center">
+                        <EnhancedBookCover
+                          book={book}
+                          size="medium"
+                          showOverlay={true}
+                          onClick={handleBookClick}
+                          className="drop-shadow-md"
+                          lazy={index > 8}
+                          priority={index < 4}
                         />
-                        
-                        {/* Loading overlay */}
-                        <div className="bookhive-book-cover-overlay">
-                          <motion.div
-                            className="bookhive-book-overlay-content"
-                            initial={{ opacity: 0 }}
-                            whileHover={{ opacity: 1 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <FaBook className="bookhive-overlay-icon" />
-                            <span>View Details</span>
-                          </motion.div>
-                        </div>
                       </div>
                       
-                      {/* Book Info */}
-                      <div className="bookhive-book-info">
-                        <h3 className="bookhive-book-title">
-                          {book.title.length > 45 ? `${book.title.substring(0, 45)}...` : book.title}
+                      {/* Book Information */}
+                      <div className="p-4 pt-0">
+                        <h3 className="font-bold text-lg text-gray-800 mb-2 line-clamp-2">
+                          {book.title}
                         </h3>
-                        <p className="bookhive-book-author">
+                        
+                        <p className="text-gray-600 text-sm mb-3 italic">
                           by {book.author || book.authorName || 'Unknown Author'}
                         </p>
                         
-                        {/* Book Meta Info */}
-                        <div className="bookhive-book-meta">
-                          {book.publishYear && (
-                            <span className="bookhive-book-year">
-                              <FaCalendarAlt className="meta-icon" />
-                              {book.publishYear}
+                        {/* Rating */}
+                        {book.rating && (
+                          <div className="flex items-center mb-3">
+                            <div className="flex text-yellow-400 mr-2">
+                              {[...Array(5)].map((_, i) => (
+                                <FaStar 
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < Math.floor(parseFloat(book.rating)) 
+                                      ? 'text-yellow-400' 
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-sm font-medium text-gray-700">
+                              {typeof book.rating === 'string' ? book.rating : book.rating.toFixed(1)}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Meta Information */}
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {book.genre && (
+                            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                              {book.genre}
                             </span>
                           )}
-                          
-                          {book.reviews && (
-                            <span className="bookhive-book-reviews">
-                              <FaUsers className="meta-icon" />
-                              {book.reviews} reviews
+                          {book.publishYear && (
+                            <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
+                              {book.publishYear}
                             </span>
                           )}
                         </div>
                         
-                        {/* Genre Badge */}
-                        {book.genre && (
-                          <motion.span 
-                            className="bookhive-book-genre"
-                            whileHover={{ scale: 1.05 }}
-                            animate={{ 
-                              scale: [1, 1.02, 1],
-                              transition: { 
-                                duration: 2, 
-                                repeat: Infinity, 
-                                repeatType: "reverse" 
-                              }
-                            }}
-                          >
-                            {book.genre}
-                          </motion.span>
-                        )}
-                        
-                        {/* Book Description Preview */}
+                        {/* Description */}
                         {book.description && (
-                          <p className="bookhive-book-description-preview">
-                            {book.description.length > 80 
-                              ? `${book.description.substring(0, 80)}...` 
+                          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                            {book.description.length > 100 
+                              ? `${book.description.substring(0, 100).replace(/\s+\S*$/, '')}...` 
                               : book.description
                             }
                           </p>
                         )}
+                        
+                        {/* Reviews */}
+                        {book.reviews && (
+                          <p className="text-xs text-gray-500 mb-4">
+                            <FaUsers className="inline w-3 h-3 mr-1" />
+                            {book.reviews} reviews
+                          </p>
+                        )}
+                        
+                        {/* Action Button */}
+                        <motion.button
+                          className="w-full bg-gradient-to-r from-purple-500 to-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:from-purple-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleBookClick(book);
+                          }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <FaBook className="w-4 h-4" />
+                          View Details
+                        </motion.button>
                       </div>
                     </motion.div>
                   ))}

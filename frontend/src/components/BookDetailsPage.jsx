@@ -1,11 +1,64 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/BookDetailsPage.css';
+
+// BookDetailsCoverImage component with robust fallback system
+const BookDetailsCoverImage = ({ book }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageError, setImageError] = useState(false);
+  
+  // Create comprehensive list of image URLs to try
+  const imageUrls = [
+    book.largeCoverUrl,
+    book.coverUrl,
+    ...(book.coverOptions || []),
+    // Additional fallback URLs
+    book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg` : null,
+    book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg` : null,
+    // Custom placeholder as final fallback
+    `https://via.placeholder.com/400x600/4F46E5/ffffff?text=${encodeURIComponent(book.title.substring(0, 20).replace(/\s+/g, '+'))}`
+  ].filter(Boolean); // Remove any null/undefined URLs
+  
+  const handleImageError = () => {
+    if (currentImageIndex < imageUrls.length - 1) {
+      setCurrentImageIndex(currentImageIndex + 1);
+    } else {
+      setImageError(true);
+    }
+  };
+  
+  const currentImageUrl = imageUrls[currentImageIndex];
+  
+  if (imageError || !currentImageUrl) {
+    // Final fallback: Custom styled div with book info
+    return (
+      <div className="simple-cover-image book-details-cover-fallback">
+        <div className="details-fallback-content">
+          <div className="book-icon-large">📚</div>
+          <div className="book-title-large">{book.title}</div>
+          <div className="book-author-large">by {book.author}</div>
+          {book.genre && <div className="book-genre-large">{book.genre}</div>}
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <img 
+      src={currentImageUrl}
+      alt={book.title}
+      className="simple-cover-image"
+      onError={handleImageError}
+      onLoad={() => setImageError(false)}
+    />
+  );
+};
 
 const BookDetailsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { workId } = useParams();
   const { user, isAuthenticated } = useAuth();
   const [book, setBook] = useState(null);
   const [bookDetails, setBookDetails] = useState(null);
@@ -17,23 +70,43 @@ const BookDetailsPage = () => {
   const [isWritingReview, setIsWritingReview] = useState(false);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [error, setError] = useState(null);
   const containerRef = useRef(null);
+  const reviewsRef = useRef(null);
 
-  // Get book from location state
+  // Get book from location state or fetch by workId
   useEffect(() => {
     const bookFromState = location.state?.book;
+    
     if (bookFromState) {
+      // Book data provided from navigation state (e.g., from mood matcher)
       setBook(bookFromState);
       fetchBookDetails(bookFromState);
       fetchAuthorDetails(bookFromState.author);
       fetchBookReviews(bookFromState.title);
+    } else if (workId) {
+      // No book data in state, try to fetch using workId
+      fetchBookByWorkId(workId);
     } else {
+      // No book data and no workId, redirect to books page
       navigate('/books');
     }
 
     // Page entrance animation
-    setTimeout(() => setPageLoaded(true), 100);
-  }, [location.state, navigate]);
+    setTimeout(() => {
+      setPageLoaded(true);
+      
+      // Scroll to reviews if requested from mood matcher
+      if (location.state?.scrollToReviews && reviewsRef.current) {
+        setTimeout(() => {
+          reviewsRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }, 500); // Wait for page to fully load
+      }
+    }, 100);
+  }, [location.state, workId, navigate]);
 
   const fetchBookDetails = async (bookData) => {
     try {
@@ -109,6 +182,60 @@ const BookDetailsPage = () => {
       console.error('Error fetching reviews:', error);
       setReviews([]);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchBookByWorkId = async (workId) => {
+    try {
+      setLoading(true);
+      
+      // Try to fetch book details from Open Library using workId
+      const response = await fetch(`https://openlibrary.org/works/${workId}.json`);
+      
+      if (!response.ok) {
+        throw new Error('Book not found');
+      }
+      
+      const bookData = await response.json();
+      
+      // Fetch author name if available
+      let authorName = 'Unknown Author';
+      if (bookData.authors && bookData.authors.length > 0) {
+        try {
+          const authorResponse = await fetch(`https://openlibrary.org${bookData.authors[0].author.key}.json`);
+          if (authorResponse.ok) {
+            const authorData = await authorResponse.json();
+            authorName = authorData.name || 'Unknown Author';
+          }
+        } catch (error) {
+          console.error('Error fetching author name:', error);
+        }
+      }
+      
+      // Create book object from Open Library data
+      const book = {
+        title: bookData.title,
+        author: authorName,
+        key: `/works/${workId}`,
+        coverUrl: bookData.covers && bookData.covers.length > 0
+          ? `https://covers.openlibrary.org/b/id/${bookData.covers[0]}-L.jpg`
+          : `https://via.placeholder.com/300x450/667eea/ffffff?text=${encodeURIComponent(bookData.title.substring(0, 15))}`,
+        description: bookData.description?.value || bookData.description || 'No description available.',
+        firstPublishYear: bookData.first_publish_date || 'Unknown',
+        rating: '4.0', // Default rating
+        subjects: bookData.subjects || [],
+        genre: bookData.subjects && bookData.subjects.length > 0 ? bookData.subjects[0] : 'General'
+      };
+      
+      setBook(book);
+      fetchBookDetails(book);
+      fetchAuthorDetails(book.author);
+      fetchBookReviews(book.title);
+      
+    } catch (error) {
+      console.error('Error fetching book by workId:', error);
+      setError('Failed to load book details. Please try again.');
       setLoading(false);
     }
   };
@@ -282,7 +409,29 @@ const BookDetailsPage = () => {
     navigate(-1);
   };
 
-  if (!book) {
+  // Show error state
+  if (error) {
+    return (
+      <div className="book-details-error">
+        <div className="error-content">
+          <div className="error-icon">❌</div>
+          <h2>Something went wrong</h2>
+          <p>{error}</p>
+          <div className="error-actions">
+            <button onClick={() => navigate('/books')} className="error-btn">
+              Browse Books
+            </button>
+            <button onClick={() => navigate('/mood-matcher')} className="error-btn">
+              Mood Matcher
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (loading || !book) {
     return (
       <div className="book-details-loading">
         <div className="loading-spinner">📚</div>
@@ -304,14 +453,7 @@ const BookDetailsPage = () => {
         {/* Book Info Section */}
         <section className="simple-book-info">
           <div className="simple-book-cover">
-            <img
-              src={book.largeCoverUrl || book.coverUrl || '/default-book-cover.svg'}
-              alt={book.title}
-              className="simple-cover-image"
-              onError={(e) => {
-                e.target.src = '/default-book-cover.svg';
-              }}
-            />
+            <BookDetailsCoverImage book={book} />
           </div>
 
           <div className="simple-book-details">
@@ -387,10 +529,17 @@ const BookDetailsPage = () => {
         </section>
 
         {/* Reviews Section */}
-        <section className="simple-reviews-section">
+        <section className="simple-reviews-section" ref={reviewsRef}>
           <div className="reviews-title">
             <h2>📚 BookHive Community Reviews</h2>
-            <span className="reviews-count">{Array.isArray(reviews) ? reviews.length : 0} reviews</span>
+            <div className="reviews-meta">
+              <span className="reviews-count">{Array.isArray(reviews) ? reviews.length : 0} reviews</span>
+              {location.state?.fromMoodMatcher && book?.mood && (
+                <span className="mood-indicator">
+                  🎯 Perfect for {book.mood} mood
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Write Review Button/Form */}

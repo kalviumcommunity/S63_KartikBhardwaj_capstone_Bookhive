@@ -716,7 +716,7 @@ const Signup = () => {
                     <motion.button 
                       type="button" 
                       className="google-btn" 
-                      onClick={() => window.location.href = 'http://localhost:5001/api/auth/google'}
+                      onClick={() => window.location.href = 'https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com/api/auth/google'}
                       whileHover={{ scale: 1.03, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                     >

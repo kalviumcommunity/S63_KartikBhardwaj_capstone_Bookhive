@@ -133,7 +133,7 @@ function App() {
                   />
                   <Route path="/book/:workId" element={
                     <ErrorBoundary>
-                      <BookDetails />
+                      <BookDetailsPage />
                     </ErrorBoundary>
                   } />
                   <Route
@@ -161,7 +161,6 @@ function App() {
                   <Route path="/carousel" element={<BookCarousel />} />
                   <Route path="/books/featured" element={<FeaturedBooksPage />} />
                   <Route path="/category/:category" element={<CategoryBooks />} />
-                  <Route path="/book-details" element={<BookDetailsPage />} />
                   <Route path="/book-of-the-month/:bookId" element={<BookOfTheMonthDetail />} />
                   <Route
                     path="*"

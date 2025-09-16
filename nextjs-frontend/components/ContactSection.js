@@ -10,15 +10,31 @@ const ContactSection = () => {
           <div className="contact-details">
             <div className="contact-item">
               <span className="contact-icon">📧</span>
-              <span>info@bookhive.com</span>
+              <span>kbrupc2020@gmail.com</span>
             </div>
             <div className="contact-item">
               <span className="contact-icon">📱</span>
-              <span>+1 (555) 123-4567</span>
+              <span>9917044xxx</span>
             </div>
             <div className="contact-item">
               <span className="contact-icon">📍</span>
-              <span>123 Book Street, Reading, CA 94321</span>
+              <span>Greater Noida sector - 1</span>
+            </div>
+          </div>
+          
+          {/* Social Media Links */}
+          <div className="social-media-section">
+            <h4>Follow Us</h4>
+            <div className="social-links">
+              <a href="https://www.linkedin.com/in/kartik-bhardwaj-0b82a8316/" target="_blank" rel="noopener noreferrer" title="LinkedIn">
+                LinkedIn
+              </a>
+              <a href="https://github.com/kartikbhardwaj1111" target="_blank" rel="noopener noreferrer" title="GitHub">
+                GitHub
+              </a>
+              <a href="https://portfolio-website-lilac-xi-72.vercel.app/" target="_blank" rel="noopener noreferrer" title="Portfolio">
+                Portfolio
+              </a>
             </div>
           </div>
         </div>

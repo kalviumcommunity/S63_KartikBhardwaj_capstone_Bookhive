@@ -221,6 +221,41 @@
   text-align: center;
 }
 
+/* Mood Recommendation Badge */
+.bookhive-mood-recommendation-badge {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  margin: 1rem auto;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mood-badge-icon {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  display: inline-block;
+}
+
+.mood-badge-text {
+  font-size: 1rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.mood-badge-reason {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-style: italic;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
 .bookhive-book-genres-enhanced {
   display: flex;
   flex-wrap: wrap;

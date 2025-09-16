@@ -253,7 +253,7 @@ const Login = () => {
                   <button
                     type="button"
                     className="google-btn"
-                    onClick={() => window.location.href = 'http://localhost:5001/api/auth/google'}
+                    onClick={() => window.location.href = 'https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com/api/auth/google'}
                   >
                     <img src="/google-icon.svg" alt="Google" className="provider-icon" />
                     Continue with Google
