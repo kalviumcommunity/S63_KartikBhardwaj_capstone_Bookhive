@@ -1,135 +1,108 @@
-# 📚 BookHive – Discover, Review & Connect  
+<h1 align="center">📚✨ BookHive – Discover, Review & Connect ✨📚</h1>
 
 <div align="center">
+
+![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Orbitron&size=26&duration=2500&pause=1000&color=00F7FF&center=true&vCenter=true&width=800&lines=Your+Next+Book+Awaits...;Discover+%7C+Review+%7C+Connect+Worldwide;Built+with+MERN+Stack+%F0%9F%92%BB;Join+the+Future+of+Reading+%F0%9F%9A%80)
+
+[![Frontend](https://img.shields.io/badge/🚀_Live_Frontend-BookHiveee.netlify.app-00F7FF?style=for-the-badge&logo=vercel&logoColor=white)](https://bookhiveee.netlify.app/)  
+[![Backend](https://img.shields.io/badge/⚡_Live_Backend-Render_API-7FFF00?style=for-the-badge&logo=render&logoColor=white)](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)  
+
+</div>
+
+---
+
+## 🪐 Why BookHive?  
+
+> *"Not just a project — a futuristic reading community hub powered by MERN."*  
+
+- 🔍 **Smart Book Discovery** – find books with AI-powered filters  
+- 📝 **Dynamic Reviews** – CRUD reviews + rating system  
+- 🌟 **Community Driven** – follow, upvote, connect  
+- 🛡️ **Secure Auth** – Email OTP + Google Sign-In  
+- 🧭 **Admin Tools** – manage users, books, reviews  
+
+---
+
+## 🌌 Features Breakdown  
+
+<details>
+<summary>🔎 Book Discovery</summary>
+<img src="https://img.shields.io/badge/SEARCH-AI%20Powered-blueviolet?style=flat-square" />
   
-✨ *Your all-in-one hub for book lovers around the world* ✨  
+- Find books by title, author, or genre  
+- Detailed metadata & community ratings  
+</details>
 
-![BookHive Banner](https://img.shields.io/badge/BookHive-Discover%20%7C%20Review%20%7C%20Connect-purple?style=for-the-badge&logo=bookstack)  
-[![Frontend](https://img.shields.io/badge/Live_Frontend-BookHiveee.netlify.app-blue?style=for-the-badge&logo=vercel)](https://bookhiveee.netlify.app/)  
-[![Backend](https://img.shields.io/badge/Live_Backend-Render_API-green?style=for-the-badge&logo=render)](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)  
+<details>
+<summary>📝 Review System</summary>
+<img src="https://img.shields.io/badge/CRUD-Reviews-orange?style=flat-square" />
 
-</div>  
+- Write, edit, delete reviews  
+- Star ratings (⭐ 1–5)  
+- Upvote helpful reviews  
+</details>
+
+<details>
+<summary>👤 User Profiles</summary>
+<img src="https://img.shields.io/badge/PROFILE-Personalized-lightblue?style=flat-square" />
+
+- Track reading history & wishlist  
+- Follow / Unfollow users  
+- Dashboard with live stats  
+</details>
+
+<details>
+<summary>🛡️ Admin Panel</summary>
+<img src="https://img.shields.io/badge/MODERATION-Active-red?style=flat-square" />
+
+- Review moderation  
+- Manage accounts & books  
+</details>
 
 ---
 
-## ✨ Overview  
+## 🖼️ Futuristic UI Sneak Peek  
 
-BookHive is a **full-stack MERN web app** where readers can:  
+> (*replace with your screenshots/GIFs later*)  
 
-- 🔍 Discover books by title, author, or genre  
-- ✍️ Share thoughtful reviews  
-- 🌟 Rate books & upvote helpful insights  
-- 👥 Connect with readers & follow reviewers  
-- 📚 Build your personal library & track reading journey  
-
----
-
-## 🚀 Features at a Glance  
-
-<details>
-<summary>🔎 <b>Book Discovery</b></summary>
-
-- Smart search by **title, author, or genre**  
-- Detailed book view with **summary, ratings & publication info**  
-
-</details>
-
-<details>
-<summary>📝 <b>Review System</b></summary>
-
-- CRUD reviews (create, update, delete)  
-- 1–5 star ratings  
-- Upvote reviews to highlight best insights  
-
-</details>
-
-<details>
-<summary>👤 <b>User Profiles</b></summary>
-
-- Personalized dashboard with stats  
-- Reading history, wishlist & favorites  
-- Follow/unfollow users  
-
-</details>
-
-<details>
-<summary>🛡️ <b>Admin Panel</b></summary>
-
-- Moderate reviews (report, approve, delete)  
-- Manage users & book entries  
-
-</details>
+| Landing Page | Dashboard | Profile |  
+|--------------|-----------|---------|  
+| ![Landing](https://via.placeholder.com/400x220?text=Landing+Page) | ![Dashboard](https://via.placeholder.com/400x220?text=Dashboard) | ![Profile](https://via.placeholder.com/400x220?text=Profile) |  
 
 ---
 
 ## 🛠️ Tech Stack  
 
-| Layer      | Technology |
-|------------|------------|
-| **Frontend** | React.js, Tailwind CSS, React Router |
-| **Backend**  | Node.js, Express.js, JWT Auth |
-| **Database** | MongoDB + Mongoose |
-| **APIs/Auth** | Google Books API, Firebase (Google Sign-In), Email OTP Verification |
-| **Deployment** | Vercel (Frontend), Render (Backend), MongoDB Atlas |
+<div align="center">
+
+![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?style=for-the-badge&logo=react&logoColor=black)  
+![Tailwind](https://img.shields.io/badge/UI-TailwindCSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)  
+![Node](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)  
+![Express](https://img.shields.io/badge/API-Express.js-000000?style=for-the-badge&logo=express&logoColor=white)  
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)  
+![Firebase](https://img.shields.io/badge/Auth-Firebase-DD2C00?style=for-the-badge&logo=firebase&logoColor=white)  
+![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)  
+![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)  
+
+</div>  
 
 ---
 
-## 🧭 UI Flow  
+## 🗓️ Roadmap  
 
-📌 **Landing Page** → Search & featured books  
-📌 **Auth** → Email OTP + Google OAuth  
-📌 **Dashboard** → Filters, book grid, reviews  
-📌 **Profile Page** → Stats, history, wishlist  
-📌 **Admin Panel** → Manage users & content  
-
----
-
-## 🗓️ Development Roadmap  
-
-✅ **Week 1**: Setup & Authentication  
-✅ **Week 2**: Core Features (Books, Reviews, Profiles)  
-✅ **Week 3**: UI/UX + Admin Tools  
-✅ **Week 4**: Testing & Final Deployment  
+- ✅ Week 1 → Auth + DB Setup  
+- ✅ Week 2 → Books + Reviews  
+- ✅ Week 3 → Profiles + Admin Tools  
+- ✅ Week 4 → Testing + Deployment  
+- 🌌 Coming Soon → Book Clubs, Challenges, Badges  
 
 ---
 
-## 🔐 Email OTP Verification  
+## 🔐 OTP Verification Flow  
 
-📧 Secure signup with **OTP-based verification**  
-
-- OTP generated server-side  
-- User enters OTP to confirm account  
-- Can integrate with **SendGrid, Mailgun, AWS SES** for production  
-
----
-
-## 🧪 Testing  
-
-- 🧼 **Backend**: Postman  
-- 🧪 **Frontend**: Jest + React Testing Library  
-
----
-
-## 🌐 Live Links  
-
-- 🔗 **Frontend** → [BookHive App](https://bookhiveee.netlify.app/)  
-- 🔗 **Backend** → [BookHive API](https://s63-kartikbhardwaj-capstone-bookhive-1.onrender.com)  
-
----
-
-## 🏁 Conclusion  
-
-BookHive isn’t just a project — it’s a **community-driven platform** with:  
-
-✅ Clean architecture  
-✅ Secure authentication  
-✅ Scalable roadmap  
-✅ Developer best practices  
-
-> 🎉 Ready to showcase as a **real-world full-stack MERN application**!  
-
----
-
-<div align="center">  
-💡 *Made with ❤️ by Kartik Bhardwaj*  
-</div>
+```mermaid
+sequenceDiagram
+User->>Server: Signup Request
+Server->>Email: Send OTP
+User->>Server: Enter OTP
+Server->>DB: Verify + Flag User as Verified
